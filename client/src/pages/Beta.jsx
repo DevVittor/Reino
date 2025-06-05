@@ -25,7 +25,7 @@ export default function Beta() {
   const filterRef = useRef(null);
   const filterButtonRef = useRef(null);
 
-  const API_URL = "https://reino-animal.onrender.com";
+  const API_URL = "https://reino.onrender.com";
 
   const fetchCategories = async () => {
     try {

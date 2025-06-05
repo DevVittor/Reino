@@ -18,7 +18,7 @@ export default function Register() {
     event.preventDefault();
     try {
       const response = await axios.post(
-        "https://reino-animal.onrender.com/api/user/register",
+        "https://reino.onrender.com/api/user/register",
         formData,
         {
           withCredentials: true,

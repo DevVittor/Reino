@@ -14,7 +14,7 @@ export default function SubCategoryManager() {
   const fetchSubCategories = async () => {
     try {
       const response = await axios.get(
-        "https://reino-animal.onrender.com/api/subcategory/list"
+        "https://reino.onrender.com/api/subcategory/list"
       );
       setSubCategories(response.data.list);
     } catch (error) {
@@ -37,7 +37,7 @@ export default function SubCategoryManager() {
   const addSubCategory = async () => {
     try {
       const response = await axios.post(
-        "https://reino-animal.onrender.com/api/subcategory/create",
+        "https://reino.onrender.com/api/subcategory/create",
         {
           subCategory: newSubCategory,
           adminId,
@@ -53,7 +53,7 @@ export default function SubCategoryManager() {
   const renameSubCategory = async () => {
     try {
       const response = await axios.patch(
-        "https://reino-animal.onrender.com/api/subcategory/alter",
+        "https://reino.onrender.com/api/subcategory/alter",
         {
           subCategoryId: selectedSubCategoryId,
           newSubCategory: subCategoryNameToRename,
@@ -70,7 +70,7 @@ export default function SubCategoryManager() {
   const deleteSubCategory = async () => {
     try {
       const response = await axios.delete(
-        "https://reino-animal.onrender.com/api/subcategory/delete",
+        "https://reino.onrender.com/api/subcategory/delete",
         {
           data: { subCategoryId: subCategoryIdToDelete, adminId },
         }

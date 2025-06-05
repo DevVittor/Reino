@@ -23,7 +23,7 @@ export default function ManageProduct() {
   });
   const [newPhotos, setNewPhotos] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const endpoint = "https://reino-animal.onrender.com";
+  const endpoint = "https://reino.onrender.com";
 
   useEffect(() => {
     const token = localStorage.getItem("token");

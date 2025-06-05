@@ -28,10 +28,7 @@ export default function ForgotPassword() {
     };
 
     axios
-      .post(
-        "hhttps://reino-animal.onrender.com/api/user/alter/password",
-        formData
-      )
+      .post("https://reino.onrender.com/api/user/alter/password", formData)
       .then((res) => {
         enqueueSnackbar("Senha alterada com sucesso!", { variant: "success" });
         setTimeout(() => {

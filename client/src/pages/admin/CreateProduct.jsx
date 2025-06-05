@@ -35,7 +35,7 @@ export default function CreateProduct() {
     const fetchCategories = async () => {
       try {
         const res = await axios.get(
-          "https://reino-animal.onrender.com/api/category/list"
+          "https://reino.onrender.com/api/category/list"
         );
         setCategoryOptions(
           res.data.list.map((cat) => ({
@@ -98,7 +98,7 @@ export default function CreateProduct() {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.post(
-        "https://reino-animal.onrender.com/api/product/create",
+        "https://reino.onrender.com/api/product/create",
         data,
         {
           headers: {

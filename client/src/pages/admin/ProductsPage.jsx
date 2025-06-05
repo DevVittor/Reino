@@ -13,7 +13,7 @@ export default function ProductsPage() {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          `https://reino-animal.onrender.com/api/product/list?limit=${limit}&page=${page}`,
+          `https://reino.onrender.com/api/product/list?limit=${limit}&page=${page}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }

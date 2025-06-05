@@ -21,7 +21,7 @@ export default function CreateCategory() {
     const fetchSubCategories = async () => {
       try {
         const response = await axios.get(
-          "https://reino-animal.onrender.com/api/subcategory/list"
+          "https://reino.onrender.com/api/subcategory/list"
         );
         setSubCategories(response.data.list);
       } catch (error) {
@@ -36,7 +36,7 @@ export default function CreateCategory() {
     event.preventDefault();
     try {
       const response = await axios.post(
-        "https://reino-animal.onrender.com/api/category/create",
+        "https://reino.onrender.com/api/category/create",
         {
           adminId,
           category,
