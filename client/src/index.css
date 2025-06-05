@@ -1,0 +1,154 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  list-style: none;
+  text-decoration: none;
+  font-family: "Inter", sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+.tesouros_da_tribo {
+  font-family: "Anton", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+.title_logo {
+  font-family: "Ultra", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/*Slider*/
+.slider-container {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+  position: relative;
+  font-family: Arial, sans-serif;
+}
+
+.main-title {
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+}
+
+.slider-3d {
+  perspective: 1000px;
+  height: 280px;
+  position: relative;
+  margin: 2rem auto;
+}
+
+.slider-card {
+  position: absolute;
+  width: 70%;
+  height: 300px;
+  left: 15%;
+  top: 0;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  transition: all 0.5s ease;
+  transform-style: preserve-3d;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.slider-card h2 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+}
+
+.slider-card h3 {
+  font-size: 1.2rem;
+  color: #666;
+  margin-bottom: 1rem;
+}
+
+.rating {
+  margin: 1rem 0;
+  font-size: 1.5rem;
+  color: gold;
+}
+
+.price {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-top: 1rem;
+}
+
+/* Posições dos slides */
+.slider-card.active {
+  transform: translateX(0) scale(1);
+  opacity: 1;
+  z-index: 10;
+}
+
+.slider-card.prev {
+  transform: translateX(-50%) scale(0.8);
+  opacity: 0.6;
+  z-index: 5;
+}
+
+.slider-card.next {
+  transform: translateX(50%) scale(0.8);
+  opacity: 0.6;
+  z-index: 5;
+}
+
+.slider-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2rem;
+}
+
+.control-btn {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  margin: 0 1rem;
+  color: #333;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin: 0 1rem;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ccc;
+  margin: 0 5px;
+  cursor: pointer;
+}
+
+.dot.active {
+  background: #333;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 3rem;
+  padding: 0 20%;
+}
+
+.ball,
+.counter {
+  font-weight: bold;
+  font-size: 1.2rem;
+}
