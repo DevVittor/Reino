@@ -1,11 +1,12 @@
-import { IoMenu } from "react-icons/io5";
+import Logo from "../assets/logo.svg"; // se o SVG estiver correto
 
 export default function Test() {
   return (
     <div className="flex gap-3  bg-[#3F2305]">
       <div className="fixed w-[350px] min-h-screen">
         <div className="flex flex-col justify-between items-center gap-10 p-5 min-h-screen bg-[#361500]">
-          <div className="h-1/5 w-full text-center">
+          <div className="flex justify-center items-center flex-col gap-1 h-1/5 w-full text-center">
+            <img src={Logo} alt="Logo" className="w-24 h-auto" />
             <h1 className="font-bold text-4xl text-[#FFE99A]">Reino Animal</h1>
           </div>
           <div className=" overflow-y-auto flex-grow w-full flex flex-col gap-3 justify-center items-center">
