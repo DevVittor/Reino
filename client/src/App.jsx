@@ -79,14 +79,14 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-          <Route
+          {/*<Route
             path="painel/produto/editar"
             element={
               <ProtectedRoute>
                 <ManageProduct />
               </ProtectedRoute>
             }
-          />
+          />*/}
           <Route
             path="painel/produto/destacar"
             element={
