@@ -51,7 +51,8 @@ export default function NavBarDashboard() {
             <Link to="/painel/produto/novo">Criar Produto</Link>
           </li>
           <li>
-            <Link to="/painel/produto/editar">Editar Produto</Link>
+            {/*<Link to="/painel/produto/editar">Editar Produto</Link>*/}
+            <span>Editar Produto (Em manutenção)</span>
           </li>
           <li>
             <Link to="/painel/produto/destacar">Destacar Produto</Link>
