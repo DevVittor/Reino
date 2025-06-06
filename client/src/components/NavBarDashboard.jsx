@@ -52,7 +52,9 @@ export default function NavBarDashboard() {
           </li>
           <li>
             {/*<Link to="/painel/produto/editar">Editar Produto</Link>*/}
-            <span>Editar Produto (Em manutenção)</span>
+            <span className="text-zinc-500">
+              Editar Produto (Em manutenção)
+            </span>
           </li>
           <li>
             <Link to="/painel/produto/destacar">Destacar Produto</Link>
