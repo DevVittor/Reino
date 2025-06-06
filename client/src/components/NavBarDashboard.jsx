@@ -52,7 +52,7 @@ export default function NavBarDashboard() {
           </li>
           <li>
             {/*<Link to="/painel/produto/editar">Editar Produto</Link>*/}
-            <span className="text-zinc-500 md:cursor-not-allowed cursor-auto">
+            <span className="text-zinc-500 md:hover:cursor-not-allowed">
               Editar Produto (Em manutenção)
             </span>
           </li>
