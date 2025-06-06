@@ -18,7 +18,7 @@ export default function CategoryManager() {
   const fetchCategories = async () => {
     try {
       const response = await axios.get(
-        "hhttps://reino-animal.onrender.com/api/category/list"
+        "https://reino-production.up.railway.app/api/category/list"
       );
       setCategories(response.data.list);
     } catch (error) {
@@ -32,7 +32,7 @@ export default function CategoryManager() {
   const fetchSubcategories = async () => {
     try {
       const response = await axios.get(
-        "hhttps://reino-animal.onrender.com/api/subcategory/list"
+        "https://reino-production.up.railway.app/api/subcategory/list"
       );
       setSubcategories(response.data.list);
     } catch (error) {
@@ -84,7 +84,7 @@ export default function CategoryManager() {
     try {
       for (const subCategoryId of selectedSubCategoryIds) {
         await axios.patch(
-          "hhttps://reino-animal.onrender.com/api/category/add-subcategory",
+          "https://reino-production.up.railway.app/api/category/add-subcategory",
           {
             adminId,
             categoryId: selectedCategoryId,
@@ -113,7 +113,7 @@ export default function CategoryManager() {
 
     try {
       const response = await axios.patch(
-        "hhttps://reino-animal.onrender.com/api/category/alter",
+        "https://reino-production.up.railway.app/api/category/alter",
         {
           categoryId: selectedCategoryId,
           newName: categoryNameToRename,
@@ -134,7 +134,7 @@ export default function CategoryManager() {
   const deleteCategory = async () => {
     try {
       const response = await axios.delete(
-        "hhttps://reino-animal.onrender.com/api/category/delete",
+        "https://reino-production.up.railway.app/api/category/delete",
         {
           data: { categoryId: categoryIdToDelete, adminId },
         }

@@ -25,7 +25,7 @@ export default function NavBar({ onFilterChange }) {
   const filterRef = useRef(null);
   const filterButtonRef = useRef(null);
 
-  const API_URL = "https://reino.onrender.com";
+  const API_URL = "https://reino-production.up.railway.app";
 
   useEffect(() => {
     const token = localStorage.getItem("token");

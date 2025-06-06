@@ -21,7 +21,7 @@ export default function CreateSubCategory() {
     event.preventDefault();
     try {
       const response = await axios.post(
-        "https://reino.onrender.com/api/subcategory/create",
+        "https://reino-production.up.railway.app/api/subcategory/create",
         {
           adminId,
           subCategory,

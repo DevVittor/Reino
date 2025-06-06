@@ -29,7 +29,7 @@ export default function BackupManageProduct() {
     const fetchProducts = async () => {
       try {
         const response = await axios.get(
-          "https://reino.onrender.com/api/product/list"
+          "https://reino-production.up.railway.app/api/product/list"
         );
         setProducts(response.data.list);
       } catch (error) {
@@ -40,7 +40,7 @@ export default function BackupManageProduct() {
     const fetchCategories = async () => {
       try {
         const response = await axios.get(
-          "https://reino.onrender.com/api/category/list"
+          "https://reino-production.up.railway.app/api/category/list"
         );
         setCategories(response.data.list);
       } catch (error) {
@@ -109,14 +109,17 @@ export default function BackupManageProduct() {
 
   const handleDelete = async () => {
     try {
-      await axios.post("https://reino.onrender.com/api/product/delete", {
-        productId: selectedProduct._id,
-        adminId: adminId,
-      });
+      await axios.post(
+        "https://reino-production.up.railway.app/api/product/delete",
+        {
+          productId: selectedProduct._id,
+          adminId: adminId,
+        }
+      );
       setSuccess("Produto deletado com sucesso!");
       setSelectedProduct(null);
       const response = await axios.get(
-        "https://reino.onrender.com/api/product/list"
+        "https://reino-production.up.railway.app/api/product/list"
       );
       setProducts(response.data.list);
     } catch (error) {
@@ -128,7 +131,7 @@ export default function BackupManageProduct() {
     event.preventDefault();
     try {
       const response = await axios.patch(
-        "https://reino.onrender.com/api/product/update",
+        "https://reino-production.up.railway.app/api/product/update",
         {
           adminId: adminId,
           productId: selectedProduct._id,

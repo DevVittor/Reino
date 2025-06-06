@@ -13,7 +13,7 @@ export default function ProductsPage() {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          `https://reino.onrender.com/api/product/list?limit=${limit}&page=${page}`,
+          `https://reino-production.up.railway.app/api/product/list?limit=${limit}&page=${page}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }

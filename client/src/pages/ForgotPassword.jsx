@@ -28,7 +28,10 @@ export default function ForgotPassword() {
     };
 
     axios
-      .post("https://reino.onrender.com/api/user/alter/password", formData)
+      .post(
+        "https://reino-production.up.railway.app/api/user/alter/password",
+        formData
+      )
       .then((res) => {
         enqueueSnackbar("Senha alterada com sucesso!", { variant: "success" });
         setTimeout(() => {

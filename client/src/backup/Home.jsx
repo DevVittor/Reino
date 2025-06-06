@@ -58,7 +58,7 @@ export default function Teste() {
   const filterRef = useRef(null);
   const filterButtonRef = useRef(null);
 
-  const urlBack = "https://reino-animal.onrender.com";
+  const urlBack = "https://reino-production.up.railway.app";
 
   const getDataProducts = useCallback(
     async (pageNum) => {

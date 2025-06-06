@@ -25,7 +25,7 @@ export default function Featured() {
     event.preventDefault();
     try {
       const response = await axios.post(
-        `https://reino.onrender.com/api/product/featured?productId=${selectedProductId}&adminId=${userId}`
+        `https://reino-production.up.railway.app/api/product/featured?productId=${selectedProductId}&adminId=${userId}`
       );
       console.log(response.data);
       setTimeout(() => {
@@ -40,7 +40,7 @@ export default function Featured() {
   const getInfoProduct = async () => {
     try {
       const response = await axios.get(
-        "https://reino.onrender.com/api/product/list/unlocks"
+        "https://reino-production.up.railway.app/api/product/list/unlocks"
       );
       setProducts(response.data.list);
     } catch (error) {

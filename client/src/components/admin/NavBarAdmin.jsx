@@ -79,12 +79,11 @@ export default function NavBarAdmin() {
               >
                 Criar Produto
               </Link>
-              <Link
-                to="/painel/produtos/editar"
+              <span
                 className="block p-2 text-sm text-gray-400 hover:bg-indigo-600 hover:text-white rounded"
               >
-                Editar Produto
-              </Link>
+                Editar Produto (Em Manutenção)
+              </span>
               <Link
                 to="/painel/produtos/apagar"
                 className="block p-2 text-sm text-gray-400 hover:bg-indigo-600 hover:text-white rounded"

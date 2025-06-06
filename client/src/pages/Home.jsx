@@ -23,7 +23,7 @@ export default function Home() {
   const filterRef = useRef(null);
   const filterButtonRef = useRef(null);
 
-  const API_URL = "https://reino.onrender.com";
+  const API_URL = "https://reino-production.up.railway.app";
 
   const fetchCategories = async () => {
     try {

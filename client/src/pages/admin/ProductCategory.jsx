@@ -14,7 +14,7 @@ export default function ProductCategory() {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedSubcategory, setSelectedSubcategory] = useState("");
 
-  const API_URL = "https://reino.onrender.com";
+  const API_URL = "https://reino-production.up.railway.app";
 
   // Buscar todos os dados (produtos, categorias, subcategorias)
   const fetchData = async () => {

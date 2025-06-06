@@ -21,7 +21,7 @@ export default function UsersPage() {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          `https://reino.onrender.com/api/user/list?adminId=${userId}`,
+          `https://reino-production.up.railway.app/api/user/list?adminId=${userId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
