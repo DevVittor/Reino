@@ -1,6 +1,6 @@
 import cors from "cors";
 const corsConfig = cors({
-  origin: (origin, callback) => {
+  /*origin: (origin, callback) => {
     const allowedOrigins = [
       "https://reino-production.up.railway.app",
       "https://reinoanimalstore.com",
@@ -13,7 +13,8 @@ const corsConfig = cors({
     } else {
       callback(new Error("Origem não permitida pelo CORS"));
     }
-  },
+  },*/
+  origin: true,
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"], // Adicione PATCH aqui
   allowedHeaders: ["Content-Type", "Authorization"],
