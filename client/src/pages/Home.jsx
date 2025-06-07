@@ -180,7 +180,7 @@ export default function Home() {
         )}
       </div>
 
-      <div className="fixed bottom-12 flex sm:justify-start justify-center sm:w-auto w-full sm:right-8 z-10 items-center">
+      <div className=" fixed bottom-12 hidden md:flex sm:justify-start justify-center sm:w-auto w-full sm:right-8 z-10 items-center">
         <div
           className="bg-white flex items-center justify-center gap-1 shadow-sm rounded-full sm:p-3 px-3 py-1.5 hover:cursor-pointer hover:bg-zinc-50 duration-150 ease-in transition-colors border border-zinc-200"
           onClick={() => setModalSearch(true)}
