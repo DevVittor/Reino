@@ -1,4 +1,3 @@
-// Home.js (Frontend)
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import axios from "axios";
 import { TbShoppingBagSearch } from "react-icons/tb";
@@ -46,21 +45,33 @@ export default function Home() {
   const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
+
       const params = {
         ...(searchTerm && { search: searchTerm }),
         ...(selectedStore && { store: selectedStore }),
         ...(selectedCategories.length > 0 && {
-          categories: selectedCategories
-            .map((category) => category._id)
-            .join(","),
+          categories: selectedCategories.map((cat) => cat._id),
         }),
         ...(selectedSubcategories.length > 0 && {
-          subcategories: selectedSubcategories.join(","),
+          subcategories: selectedSubcategories,
         }),
       };
+
       const response = await axios.get(`${API_URL}/api/product/list`, {
         params,
+        paramsSerializer: (params) => {
+          const searchParams = new URLSearchParams();
+          for (const key in params) {
+            if (Array.isArray(params[key])) {
+              params[key].forEach((val) => searchParams.append(key, val));
+            } else {
+              searchParams.append(key, params[key]);
+            }
+          }
+          return searchParams.toString();
+        },
       });
+
       setProducts(response.data.list || []);
     } catch (error) {
       console.error("Erro ao buscar produtos:", error);
@@ -99,14 +110,6 @@ export default function Home() {
     fetchCategories();
     fetchSubcategories();
   }, []);
-
-  useEffect(() => {
-    if (modalSearch) document.body.style.overflow = "hidden";
-    else document.body.style.overflow = "";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [modalSearch]);
 
   useEffect(() => {
     const initData = async () => {
@@ -177,22 +180,23 @@ export default function Home() {
         )}
       </div>
 
-      {/*!modalSearch && (
-        <div className="fixed bottom-12 flex sm:justify-start justify-center sm:w-auto w-full sm:right-8 z-10 items-center">
-          <div
-            className="bg-white flex items-center justify-center gap-1 shadow-sm rounded-full sm:p-3 px-3 py-1.5 hover:cursor-pointer hover:bg-zinc-50 duration-150 ease-in transition-colors border border-zinc-200"
-            onClick={() => setModalSearch(true)}
-          >
-            <TbShoppingBagSearch className="sm:text-3xl text-2xl" />
-            <span>Filtro</span>
-          </div>
+      <div className="fixed bottom-12 flex sm:justify-start justify-center sm:w-auto w-full sm:right-8 z-10 items-center">
+        <div
+          className="bg-white flex items-center justify-center gap-1 shadow-sm rounded-full sm:p-3 px-3 py-1.5 hover:cursor-pointer hover:bg-zinc-50 duration-150 ease-in transition-colors border border-zinc-200"
+          onClick={() => setModalSearch(true)}
+        >
+          <TbShoppingBagSearch className="sm:text-3xl text-2xl" />
+          <span>Filtro</span>
         </div>
-      )*/}
+      </div>
 
       {modalSearch && (
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-white/80 backdrop-blur-md p-3">
           <div className="flex justify-center relative h-full items-center">
-            <div className="w-[320px] absolute bottom-0 sm:top-1/2 sm:bottom-auto sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 max-h-[500px] overflow-hidden bg-white rounded-2xl shadow-xl p-4 flex flex-col gap-3 border border-zinc-200 transition-all ease-in-out duration-150">
+            <div
+              className="w-[320px] absolute bottom-0 sm:top-1/2 sm:bottom-auto sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 max-h-[500px] overflow-hidden bg-white rounded-2xl shadow-xl p-4 flex flex-col gap-3 border border-zinc-200 transition-all ease-in-out duration-150"
+              ref={filterRef}
+            >
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-zinc-800">
                   🎯 Filtros
@@ -258,6 +262,9 @@ export default function Home() {
                               <input
                                 type="checkbox"
                                 className="accent-blue-600 w-4 h-4"
+                                checked={selectedSubcategories.includes(
+                                  sub._id
+                                )}
                                 onChange={() =>
                                   handleSubcategoryToggle(sub._id)
                                 }
@@ -280,6 +287,20 @@ export default function Home() {
                 }}
               >
                 ✅ Aplicar Filtro
+              </button>
+
+              <button
+                className="w-full bg-zinc-100 text-zinc-700 font-semibold py-2 rounded-lg hover:opacity-90 transition-all text-sm"
+                onClick={() => {
+                  setSearchTerm("");
+                  setSelectedStore("");
+                  setSelectedCategories([]);
+                  setSelectedSubcategories([]);
+                  fetchProducts();
+                  setModalSearch(false);
+                }}
+              >
+                ❌ Limpar Filtros
               </button>
             </div>
           </div>

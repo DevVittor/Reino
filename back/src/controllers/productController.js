@@ -49,7 +49,6 @@ export const allProducts = async (req, res) => {
   }
 };
 
-// listProducts.js (Backend)
 export const listProducts = async (req, res) => {
   try {
     const { search, store, categories, subcategories } = req.query;
@@ -65,14 +64,18 @@ export const listProducts = async (req, res) => {
     }
 
     if (categories) {
-      const categoryArray = categories.split(",").filter(Boolean);
+      const categoryArray = Array.isArray(categories)
+        ? categories
+        : categories.split(",").filter(Boolean);
       if (categoryArray.length > 0) {
         filter.categoryId = { $in: categoryArray };
       }
     }
 
     if (subcategories) {
-      const subcategoryArray = subcategories.split(",").filter(Boolean);
+      const subcategoryArray = Array.isArray(subcategories)
+        ? subcategories
+        : subcategories.split(",").filter(Boolean);
       if (subcategoryArray.length > 0) {
         filter.subCategoryId = { $in: subcategoryArray };
       }
