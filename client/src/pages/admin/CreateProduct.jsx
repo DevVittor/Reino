@@ -118,6 +118,7 @@ export default function CreateProduct() {
       enqueueSnackbar(error?.response?.data?.error || "Erro ao criar produto", {
         variant: "error",
       });
+      console.log(`Error: ${error.message}`);
     } finally {
       setLoading(false);
     }

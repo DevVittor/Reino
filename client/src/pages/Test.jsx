@@ -3,8 +3,8 @@ import Logo from "../assets/logo.svg"; // se o SVG estiver correto
 export default function Test() {
   return (
     <div className="flex gap-3  bg-[#3F2305]">
-      <div className="fixed w-[350px] min-h-screen">
-        <div className="flex flex-col justify-between items-center gap-10 p-5 min-h-screen bg-[#361500]">
+      <div className="fixed md:w-[350px] w-[300px] min-h-screen">
+        <div className="flex flex-col justify-between items-center gap-10 p-5 min-h-screen bg-[#361500] md:border-none border-r-2 border-[#52280f]">
           <div className="flex justify-center items-center flex-col gap-1 h-1/5 w-full text-center">
             <img src={Logo} alt="Logo" className="w-24 h-auto" />
             <h1 className="font-bold text-4xl text-[#FFE99A]">Reino Animal</h1>
@@ -49,7 +49,7 @@ export default function Test() {
           </div>
         </div>
       </div>
-      <div className="flex-grow  ml-[350px] grid grid-cols-4 gap-2 p-2">
+      <div className="flex-grow  md:ml-[350px] grid md:grid-cols-4 grid-cols-2 gap-2 p-2">
         {Array.from({ length: 30 }).map((_, index) => (
           <div
             className="bg-[#361500] h-[250px] w-auto rounded-xl"
