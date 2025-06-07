@@ -119,7 +119,7 @@ export default function NavBar({ onFilterChange }) {
           <button
             ref={filterButtonRef}
             onClick={() => setModalSearch(true)}
-            className="flex items-center gap-1 border border-zinc-200 px-3 py-1 rounded-full bg-white hover:bg-zinc-50 transition-colors text-sm"
+            className="md:hidden flex items-center gap-1 border border-zinc-200 px-3 py-1 rounded-full bg-white hover:bg-zinc-50 transition-colors text-sm"
           >
             <TbShoppingBagSearch />
             Filtros
