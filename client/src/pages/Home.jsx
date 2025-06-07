@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import axios from "axios";
+import debounce from "lodash.debounce";
 import { TbShoppingBagSearch } from "react-icons/tb";
 import { IoCart, IoClose, IoChevronDown, IoChevronUp } from "react-icons/io5";
 import { Link } from "react-router-dom";
@@ -42,36 +43,44 @@ export default function Home() {
     }
   };
 
+  const fetchFeaturedProducts = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/api/product/list/featured`);
+      setListFeatured(response.data.list || []);
+    } catch (error) {
+      console.error("Erro ao buscar destaques:", error);
+      setListFeatured([]);
+    }
+  };
+
   const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
-
       const params = {
         ...(searchTerm && { search: searchTerm }),
         ...(selectedStore && { store: selectedStore }),
         ...(selectedCategories.length > 0 && {
-          categories: selectedCategories.map((cat) => cat._id),
+          categories: selectedCategories.map((c) => c._id),
         }),
         ...(selectedSubcategories.length > 0 && {
           subcategories: selectedSubcategories,
         }),
       };
-
       const response = await axios.get(`${API_URL}/api/product/list`, {
         params,
         paramsSerializer: (params) => {
-          const searchParams = new URLSearchParams();
+          const query = new URLSearchParams();
           for (const key in params) {
-            if (Array.isArray(params[key])) {
-              params[key].forEach((val) => searchParams.append(key, val));
+            const value = params[key];
+            if (Array.isArray(value)) {
+              value.forEach((v) => query.append(key, v));
             } else {
-              searchParams.append(key, params[key]);
+              query.append(key, value);
             }
           }
-          return searchParams.toString();
+          return query.toString();
         },
       });
-
       setProducts(response.data.list || []);
     } catch (error) {
       console.error("Erro ao buscar produtos:", error);
@@ -81,15 +90,9 @@ export default function Home() {
     }
   }, [searchTerm, selectedStore, selectedCategories, selectedSubcategories]);
 
-  const fetchFeaturedProducts = useCallback(async () => {
-    try {
-      const response = await axios.get(`${API_URL}/api/product/list/featured`);
-      setListFeatured(response.data.list || []);
-    } catch (error) {
-      console.error("Erro ao buscar destaques:", error);
-      setListFeatured([]);
-    }
-  }, []);
+  const debouncedFetchProducts = useCallback(debounce(fetchProducts, 500), [
+    fetchProducts,
+  ]);
 
   const toggleCategory = (categoryId) => {
     setExpandedCategories((prev) => ({
@@ -109,14 +112,13 @@ export default function Home() {
   useEffect(() => {
     fetchCategories();
     fetchSubcategories();
+    fetchFeaturedProducts();
   }, []);
 
   useEffect(() => {
-    const initData = async () => {
-      await Promise.all([fetchFeaturedProducts(), fetchProducts()]);
-    };
-    initData();
-  }, [fetchFeaturedProducts, fetchProducts]);
+    debouncedFetchProducts();
+    return () => debouncedFetchProducts.cancel();
+  }, [searchTerm, selectedStore, selectedCategories, selectedSubcategories]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -180,7 +182,7 @@ export default function Home() {
         )}
       </div>
 
-      <div className=" fixed bottom-12 hidden md:flex sm:justify-start justify-center sm:w-auto w-full sm:right-8 z-10 items-center">
+      <div className="fixed bottom-12 flex sm:justify-start justify-center sm:w-auto w-full sm:right-8 z-10 items-center">
         <div
           className="bg-white flex items-center justify-center gap-1 shadow-sm rounded-full sm:p-3 px-3 py-1.5 hover:cursor-pointer hover:bg-zinc-50 duration-150 ease-in transition-colors border border-zinc-200"
           onClick={() => setModalSearch(true)}
@@ -194,8 +196,8 @@ export default function Home() {
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-white/80 backdrop-blur-md p-3">
           <div className="flex justify-center relative h-full items-center">
             <div
-              className="w-[320px] absolute bottom-0 sm:top-1/2 sm:bottom-auto sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 max-h-[500px] overflow-hidden bg-white rounded-2xl shadow-xl p-4 flex flex-col gap-3 border border-zinc-200 transition-all ease-in-out duration-150"
               ref={filterRef}
+              className="w-[320px] absolute bottom-0 sm:top-1/2 sm:bottom-auto sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 max-h-[500px] overflow-hidden bg-white rounded-2xl shadow-xl p-4 flex flex-col gap-3 border border-zinc-200 transition-all ease-in-out duration-150"
             >
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-zinc-800">
@@ -225,7 +227,7 @@ export default function Home() {
                 <option value="Mercado Livre">Mercado Livre</option>
               </select>
 
-              <div className="overflow-y-auto scrollbar-thin scrollbar-thumb-zinc-300 pr-1 max-h-[300px] transition-all ease-in-out duration-150">
+              <div className="overflow-y-auto scrollbar-thin scrollbar-thumb-zinc-300 pr-1 max-h-[300px]">
                 {categoryOptions.map((category) => (
                   <div key={category._id} className="mb-2">
                     <div
@@ -262,12 +264,12 @@ export default function Home() {
                               <input
                                 type="checkbox"
                                 className="accent-blue-600 w-4 h-4"
-                                checked={selectedSubcategories.includes(
-                                  sub._id
-                                )}
                                 onChange={() =>
                                   handleSubcategoryToggle(sub._id)
                                 }
+                                checked={selectedSubcategories.includes(
+                                  sub._id
+                                )}
                               />
                               {sub.subCategory}
                             </label>
@@ -287,20 +289,6 @@ export default function Home() {
                 }}
               >
                 ✅ Aplicar Filtro
-              </button>
-
-              <button
-                className="w-full bg-zinc-100 text-zinc-700 font-semibold py-2 rounded-lg hover:opacity-90 transition-all text-sm"
-                onClick={() => {
-                  setSearchTerm("");
-                  setSelectedStore("");
-                  setSelectedCategories([]);
-                  setSelectedSubcategories([]);
-                  fetchProducts();
-                  setModalSearch(false);
-                }}
-              >
-                ❌ Limpar Filtros
               </button>
             </div>
           </div>

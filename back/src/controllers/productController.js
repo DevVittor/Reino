@@ -53,16 +53,20 @@ export const listProducts = async (req, res) => {
   try {
     const { search, store, categories, subcategories } = req.query;
 
-    let filter = { blocked: false };
+    // Filtro inicial: produtos não bloqueados
+    const filter = { blocked: false };
 
+    // Filtro por nome do produto (busca textual, case insensitive)
     if (search) {
       filter.product = { $regex: search, $options: "i" };
     }
 
+    // Filtro por loja
     if (store) {
       filter.store = store;
     }
 
+    // Filtro por categoria (pode ser array ou string separada por vírgula)
     if (categories) {
       const categoryArray = Array.isArray(categories)
         ? categories
@@ -72,6 +76,7 @@ export const listProducts = async (req, res) => {
       }
     }
 
+    // Filtro por subcategoria
     if (subcategories) {
       const subcategoryArray = Array.isArray(subcategories)
         ? subcategories
@@ -81,24 +86,28 @@ export const listProducts = async (req, res) => {
       }
     }
 
+    // Log do filtro atual em modo dev (útil para depurar)
+    if (process.env.NODE_ENV !== "production") {
+      console.log("🔍 Filtro aplicado:", JSON.stringify(filter, null, 2));
+    }
+
+    // Busca no banco com populates
     const products = await productModel
       .find(filter)
       .populate("categoryId", "category")
-      .populate("subCategoryId", "subCategory");
+      .populate("subCategoryId", "subCategory")
+      .lean(); // opcional: melhora performance se você não precisa de métodos mongoose
 
-    if (products.length <= 0) {
-      return res.status(404).json({
-        error: "Nenhum produto encontrado com os filtros aplicados",
-        filters: filter,
-      });
-    }
-
+    // Retorno
     return res.status(200).json({
-      msg: "Produtos encontrados",
+      msg:
+        products.length > 0
+          ? "Produtos encontrados"
+          : "Nenhum produto encontrado com os filtros aplicados",
       list: products,
     });
   } catch (error) {
-    console.error(`Erro ao listar produtos: ${error.message}`);
+    console.error(`❌ Erro ao listar produtos: ${error.message}`);
     return res.status(500).json({
       error: "Erro interno ao buscar produtos",
       details: error.message,
