@@ -1,4 +1,3 @@
-// Test.jsx
 import { Link } from "react-router-dom";
 import Logo from "../assets/logo.svg";
 import { useEffect, useState } from "react";
@@ -8,121 +7,97 @@ import { motion, AnimatePresence } from "framer-motion";
 
 export default function Test() {
   const [products, setProducts] = useState([]);
+  const [categoryOptions, setCategoryOptions] = useState([]);
+  const [subcategories, setSubcategories] = useState([]);
   const [showCategories, setShowCategories] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
 
+  const API = "https://reino-production.up.railway.app";
+
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchAll = async () => {
       try {
-        const response = await axios.get(
-          "https://reino-production.up.railway.app/api/product/list"
-        );
-        setProducts(response.data.list || []);
-      } catch (error) {
-        console.error("Erro ao buscar produtos:", error);
+        const [{ data: prod }, { data: cat }, { data: sub }] =
+          await Promise.all([
+            axios.get(`${API}/api/product/list`),
+            axios.get(`${API}/api/category/list`),
+            axios.get(`${API}/api/subcategory/list`),
+          ]);
+        setProducts(prod.list || []);
+        setCategoryOptions(cat.list);
+        setSubcategories(sub.list);
+      } catch (e) {
+        console.error(e);
       }
     };
-
-    fetchProducts();
+    fetchAll();
   }, []);
 
-  const fakeCategories = Array.from({ length: 5 }).map((_, i) => ({
-    name: `Categoria ${i + 1}`,
-    sub: [`Subcategoria A${i + 1}`, `Subcategoria B${i + 1}`],
-  }));
+  const getSubFor = (catId) => {
+    const cat = categoryOptions.find((c) => c._id === catId);
+    if (!cat || !cat.subCategoryId) return [];
+    return subcategories.filter((s) => cat.subCategoryId.includes(s._id));
+  };
 
   return (
     <div className="flex flex-col md:flex-row bg-[#3F2305] min-h-screen pb-14 md:pb-0">
-      {/* Sidebar (Desktop) */}
-      <div className="hidden md:flex fixed md:w-[350px] w-full min-h-screen">
-        <div className="flex flex-col justify-between items-center gap-10 p-5 min-h-screen bg-[#361500] border-r-2 border-[#52280f] w-full">
-          <div className="flex justify-center items-center flex-col gap-1 h-1/5 w-full text-center">
-            <Link to="/">
-              <img src={Logo} alt="Logo" className="w-24 rounded-full" />
-            </Link>
-            <Link to="/">
-              <h1 className="font-bold text-4xl text-[#FFE99A]">
-                Reino Animal
-              </h1>
-            </Link>
-          </div>
-
-          <div className="overflow-y-auto flex-grow w-full flex flex-col gap-3 justify-center items-center">
-            <div className="w-full">
-              <input
-                className="px-3 py-2 rounded-xl w-full bg-[#3F2305] text-[#FFE99A] outline-none border-none font-medium"
-                type="search"
-                placeholder="Buscar produtos..."
-              />
-            </div>
-            <div className="w-full overflow-y-auto">
-              <ol className="flex flex-col gap-2 w-full">
-                {fakeCategories.map((cat, index) => (
+      <div className="hidden md:flex fixed left-0 top-0 w-[350px] h-full bg-[#361500] border-r-2 border-[#52280f] p-5 flex flex-col justify-between items-center">
+        <div className="w-full overflow-y-auto">
+          <ol className="flex flex-col gap-2">
+            {categoryOptions.map((c) => (
+              <li
+                key={c._id}
+                className={`px-3 py-1 rounded-full w-full text-center cursor-pointer ${
+                  selectedCategory === c._id ? "bg-gray-700" : "bg-[#3F2305]"
+                }`}
+                onClick={() =>
+                  setSelectedCategory(selectedCategory === c._id ? null : c._id)
+                }
+              >
+                {c.category}
+              </li>
+            ))}
+          </ol>
+          {selectedCategory && (
+            <div className="mt-3 px-4">
+              <h4 className="text-[#FFE99A] mb-1">Subcategorias:</h4>
+              <ul className="flex flex-col gap-1">
+                {getSubFor(selectedCategory).map((s) => (
                   <li
-                    key={index}
-                    className="text-[#FFE99A] bg-[#3F2305] w-full px-3 py-1 rounded-full text-center"
+                    key={s._id}
+                    className="px-2 py-1 bg-[#52280f] rounded-full text-xs text-center"
                   >
-                    {cat.name}
+                    {s.subCategory}
                   </li>
                 ))}
-              </ol>
+              </ul>
             </div>
-          </div>
-
-          <div className="py-2 px-5 bg-[#3F2305] max-h-[100px] rounded-xl w-auto flex justify-center items-center gap-2">
-            <div>
-              <img
-                className="w-14 h-14 object-cover rounded-full border-2 border-[#361500]"
-                src="https://images.pexels.com/photos/28206842/pexels-photo-28206842/free-photo-of-moda-tendencia-pessoa-mulher.jpeg"
-                alt=""
-              />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-base font-medium text-zinc-100">
-                Adriane Freitas
-              </span>
-              <span className="font-light text-xs text-zinc-300">Admin</span>
-            </div>
-          </div>
+          )}
         </div>
       </div>
 
-      {/* Conteúdo principal */}
-      <div className="flex-grow md:ml-[350px]">
-        <div className="bg-red-500 md:h-[400px] h-[250px] p-2 flex justify-center items-center sticky top-0 z-10">
-          <div className="w-full h-full bg-red-600"></div>
-        </div>
+      <div className="flex-grow md:ml-[350px] p-4">
+        <div className="sticky top-0 bg-red-500 h-[250px] md:h-[400px] mb-4"></div>
 
-        <div className="md:columns-5 columns-2 md:gap-2 gap-1 md:px-2 md:pt-2 px-1 pt-1">
-          {products.map((product) => (
+        <div className="columns-2 md:columns-5 gap-2">
+          {products.map((p) => (
             <div
-              key={product._id}
-              className="break-inside-avoid flex flex-col justify-center items-center md:mb-2 mb-1"
+              key={p._id}
+              className="break-inside-avoid mb-2 bg-[#070707] rounded-lg overflow-hidden"
             >
-              <div className="w-full">
-                <img
-                  className="w-full object-cover"
-                  loading="lazy"
-                  src={product.photos}
-                  alt={product.product}
-                  title={product.product}
-                />
-              </div>
-              <div className="w-full bg-[#070707] py-2 px-3 flex flex-col gap-2">
-                <h2
-                  className="text-[#FFE99A] font-semibold line-clamp-2 md:leading-5 leading-4 md:text-base text-sm"
-                  title={product.product}
-                >
-                  {product.product}
-                </h2>
+              <img
+                src={p.photos}
+                alt={p.product}
+                className="w-full object-cover"
+              />
+              <div className="p-2 text-[#FFE99A]">
+                <h2 className="font-semibold line-clamp-2">{p.product}</h2>
                 <Link
-                  to={product.link}
+                  to={p.link}
                   target="_blank"
-                  className="bg-amber-900 px-3 py-1 flex-grow text-[#FFE99A] flex justify-center items-center truncate font-bold"
-                  title={product.price}
+                  className="mt-2 block bg-amber-900 text-center py-1 rounded"
                 >
-                  <span className="mx-1">R$</span>
-                  {product.price.toFixed(2).replace(".", ",")}
+                  R$ {p.price.toFixed(2).replace(".", ",")}
                 </Link>
               </div>
             </div>
@@ -130,29 +105,37 @@ export default function Test() {
         </div>
       </div>
 
-      {/* Bottom Navbar para Mobile */}
-      <div className="md:hidden fixed bottom-0 w-full bg-[#361500] border-t border-[#52280f] flex justify-around items-center py-2 z-50">
+      <div className="fixed bottom-0 w-full bg-[#361500] border-t border-[#52280f] flex justify-around items-center py-2 z-50 md:hidden">
         <Link
           to="/"
-          className="text-[#FFE99A] flex flex-col items-center text-xs"
+          className="flex flex-col items-center text-xs text-[#FFE99A]"
         >
-          <FiHome size={20} /> Início
+          <FiHome size={20} />
+          Início
         </Link>
         <button
           onClick={() => setShowCategories((prev) => !prev)}
-          className="text-[#FFE99A] flex flex-col items-center text-xs"
+          className="flex flex-col items-center text-xs text-[#FFE99A]"
         >
-          <FiGrid size={20} /> Categorias
+          <FiGrid size={20} />
+          Categorias
         </button>
-        <button className="text-[#FFE99A] flex flex-col items-center text-xs">
-          <FiSearch size={20} /> Buscar
-        </button>
-        <button className="text-[#FFE99A] flex flex-col items-center text-xs">
-          <FiUser size={20} /> Perfil
-        </button>
+        <Link
+          to="/buscar"
+          className="flex flex-col items-center text-xs text-[#FFE99A]"
+        >
+          <FiSearch size={20} />
+          Buscar
+        </Link>
+        <Link
+          to="/perfil"
+          className="flex flex-col items-center text-xs text-[#FFE99A]"
+        >
+          <FiUser size={20} />
+          Perfil
+        </Link>
       </div>
 
-      {/* Menu de Categorias */}
       <AnimatePresence>
         {showCategories && (
           <motion.div
@@ -163,31 +146,31 @@ export default function Test() {
           >
             {!selectedCategory ? (
               <ul className="flex flex-col gap-2">
-                {fakeCategories.map((cat, i) => (
+                {categoryOptions.map((c) => (
                   <li
-                    key={i}
+                    key={c._id}
                     className="p-2 bg-[#52280f] rounded text-center"
-                    onClick={() => setSelectedCategory(cat)}
+                    onClick={() => setSelectedCategory(c._id)}
                   >
-                    {cat.name}
+                    {c.category}
                   </li>
                 ))}
               </ul>
             ) : (
               <>
                 <button
-                  className="mb-3 text-sm underline"
+                  className="mb-3 underline"
                   onClick={() => setSelectedCategory(null)}
                 >
                   Voltar às categorias
                 </button>
                 <ul className="flex flex-col gap-2">
-                  {selectedCategory.sub.map((sub, idx) => (
+                  {getSubFor(selectedCategory).map((s) => (
                     <li
-                      key={idx}
+                      key={s._id}
                       className="p-2 bg-[#52280f] rounded text-center"
                     >
-                      {sub}
+                      {s.subCategory}
                     </li>
                   ))}
                 </ul>
