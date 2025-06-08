@@ -1,6 +1,6 @@
 // Test.jsx
 import { Link } from "react-router-dom";
-import Logo from "../assets/logo.svg";  
+import Logo from "../assets/logo.svg";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
@@ -14,6 +14,7 @@ export default function Test() {
           "https://reino-production.up.railway.app/api/product/list"
         );
         setProducts(response.data.list || []);
+        console.log(response.data.list);
       } catch (error) {
         console.error("Erro ao buscar produtos:", error);
       }
@@ -90,13 +91,13 @@ export default function Test() {
               <div className="w-full bg-[#361500]">
                 <img
                   className="w-full h-[150px] object-cover rounded-t-xl"
-                  src={product.cover}
-                  alt={product.name}
+                  src={product.photos}
+                  alt={product.product}
                 />
               </div>
               <div className="w-full bg-[#070707] rounded-b-xl py-2 px-3">
                 <h2 className="text-[#FFE99A] font-semibold line-clamp-2 leading-5">
-                  {product.name}
+                  {product.product}
                 </h2>
               </div>
             </div>
