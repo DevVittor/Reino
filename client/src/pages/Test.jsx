@@ -1,149 +1,47 @@
 import { Link } from "react-router-dom";
 import Logo from "../assets/logo.svg";
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { FiHome, FiSearch, FiUser, FiGrid } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
-import debounce from "lodash.debounce";
-import { IoClose, IoChevronDown, IoChevronUp } from "react-icons/io5";
 
 export default function Test() {
   const [products, setProducts] = useState([]);
   const [categoryOptions, setCategoryOptions] = useState([]);
   const [subcategories, setSubcategories] = useState([]);
-
-  // Estados de filtro e UI
   const [showCategories, setShowCategories] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
-  const [selectedStore, setSelectedStore] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategories, setSelectedCategories] = useState([]);
-  const [selectedSubcategories, setSelectedSubcategories] = useState([]);
-  const [expandedCategories, setExpandedCategories] = useState({});
-  const [loading, setLoading] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null);
 
   const API = "https://reino-production.up.railway.app";
 
-  const filterRef = useRef(null);
-
-  // Função para buscar produtos com filtros aplicados
-  const fetchProducts = useCallback(async () => {
-    try {
-      setLoading(true);
-      const params = {
-        ...(searchTerm && { search: searchTerm }),
-        ...(selectedStore && { store: selectedStore }),
-        ...(selectedCategories.length > 0 && {
-          categories: selectedCategories.map((c) => c._id),
-        }),
-        ...(selectedSubcategories.length > 0 && {
-          subcategories: selectedSubcategories,
-        }),
-      };
-      const response = await axios.get(`${API}/api/product/list`, {
-        params,
-        paramsSerializer: (params) => {
-          const query = new URLSearchParams();
-          for (const key in params) {
-            const value = params[key];
-            if (Array.isArray(value)) {
-              value.forEach((v) => query.append(key, v));
-            } else {
-              query.append(key, value);
-            }
-          }
-          return query.toString();
-        },
-      });
-      setProducts(response.data.list || []);
-    } catch (error) {
-      console.error("Erro ao buscar produtos:", error);
-      setProducts([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [searchTerm, selectedStore, selectedCategories, selectedSubcategories]);
-
-  // Debounce para busca, para não chamar a API a cada tecla digitada
-  const debouncedFetchProducts = useCallback(debounce(fetchProducts, 500), [
-    fetchProducts,
-  ]);
-
   useEffect(() => {
-    // Buscar categorias e subcategorias ao montar
-    const fetchCategories = async () => {
+    const fetchAll = async () => {
       try {
-        const catRes = await axios.get(`${API}/api/category/list`);
-        setCategoryOptions(catRes.data.list);
-      } catch {
-        setCategoryOptions([]);
+        const [{ data: prod }, { data: cat }, { data: sub }] =
+          await Promise.all([
+            axios.get(`${API}/api/product/list`),
+            axios.get(`${API}/api/category/list`),
+            axios.get(`${API}/api/subcategory/list`),
+          ]);
+        setProducts(prod.list || []);
+        setCategoryOptions(cat.list);
+        setSubcategories(sub.list);
+      } catch (e) {
+        console.error(e);
       }
     };
-    const fetchSubcategories = async () => {
-      try {
-        const subRes = await axios.get(`${API}/api/subcategory/list`);
-        setSubcategories(subRes.data.list);
-      } catch {
-        setSubcategories([]);
-      }
-    };
-    fetchCategories();
-    fetchSubcategories();
+    fetchAll();
   }, []);
 
-  useEffect(() => {
-    debouncedFetchProducts();
-    return () => debouncedFetchProducts.cancel();
-  }, [searchTerm, selectedStore, selectedCategories, selectedSubcategories]);
-
-  // Toggle para expandir categorias no filtro
-  const toggleCategory = (categoryId) => {
-    setExpandedCategories((prev) => ({
-      ...prev,
-      [categoryId]: !prev[categoryId],
-    }));
-  };
-
-  // Pega subcategorias relacionadas à categoria
   const getSubFor = (catId) => {
     const cat = categoryOptions.find((c) => c._id === catId);
     if (!cat || !cat.subCategoryId) return [];
     return subcategories.filter((s) => cat.subCategoryId.includes(s._id));
   };
 
-  // Toggle seleção categoria no filtro
-  const handleCategoryToggle = (category) => {
-    setSelectedCategories((prev) =>
-      prev.some((c) => c._id === category._id)
-        ? prev.filter((c) => c._id !== category._id)
-        : [...prev, category]
-    );
-  };
-
-  // Toggle seleção subcategoria no filtro
-  const handleSubcategoryToggle = (subId) => {
-    setSelectedSubcategories((prev) =>
-      prev.includes(subId)
-        ? prev.filter((id) => id !== subId)
-        : [...prev, subId]
-    );
-  };
-
-  // Fechar filtro ao clicar fora
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (filterRef.current && !filterRef.current.contains(event.target)) {
-        setShowSearch(false);
-        setShowCategories(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
   return (
     <div className="flex flex-col md:flex-row bg-[#3F2305] min-h-screen pb-14 md:pb-0">
-      {/* Sidebar categorias desktop */}
       <div className="hidden md:flex fixed left-0 top-0 w-[350px] h-full bg-[#361500] border-r-2 border-[#52280f] p-5 flex-col justify-between">
         <div className="w-full flex justify-center mb-6">
           <img src={Logo} alt="Logo" className="h-16" />
@@ -154,225 +52,160 @@ export default function Test() {
               <li
                 key={c._id}
                 className={`px-3 py-1 rounded-full text-center cursor-pointer ${
-                  selectedCategories.some((cat) => cat._id === c._id)
-                    ? "bg-gray-700"
-                    : "bg-[#3F2305]"
+                  selectedCategory === c._id ? "bg-gray-700" : "bg-[#3F2305]"
                 }`}
-                onClick={() => handleCategoryToggle(c)}
+                onClick={() =>
+                  setSelectedCategory(selectedCategory === c._id ? null : c._id)
+                }
               >
-                <div className="flex justify-between items-center">
-                  <span>{c.category}</span>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleCategory(c._id);
-                    }}
-                  >
-                    {expandedCategories[c._id] ? (
-                      <IoChevronUp />
-                    ) : (
-                      <IoChevronDown />
-                    )}
-                  </button>
-                </div>
-                {expandedCategories[c._id] && (
-                  <ul className="mt-1 ml-4 space-y-1 text-sm text-[#FFE99A]">
-                    {getSubFor(c._id).map((s) => (
-                      <li
-                        key={s._id}
-                        className="cursor-pointer"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleSubcategoryToggle(s._id);
-                        }}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={selectedSubcategories.includes(s._id)}
-                          readOnly
-                          className="mr-1"
-                        />
-                        {s.subCategory}
-                      </li>
-                    ))}
-                  </ul>
-                )}
+                {c.category}
               </li>
             ))}
           </ol>
-        </div>
-      </div>
-
-      {/* Conteúdo principal */}
-      <div className="flex-grow md:ml-[350px] p-4">
-        <div className="sticky top-0 bg-red-500 h-[250px] md:h-[400px] mb-4"></div>
-
-        {/* Produtos */}
-        <div className="columns-2 md:columns-5 gap-2">
-          {loading ? (
-            <p className="text-yellow-300 text-center w-full">Carregando...</p>
-          ) : products.length > 0 ? (
-            products.map((p) => (
-              <div
-                key={p._id}
-                className="break-inside-avoid mb-2 bg-[#070707] rounded-lg overflow-hidden"
-              >
-                <img
-                  src={Array.isArray(p.photos) ? p.photos[0] : p.photos}
-                  alt={p.product}
-                  className="w-full object-cover"
-                />
-                <div className="p-2 text-[#FFE99A]">
-                  <h2 className="font-semibold line-clamp-2">{p.product}</h2>
-                  <Link
-                    to={p.link}
-                    target="_blank"
-                    className="mt-2 block bg-amber-900 text-center py-1 rounded"
+          {selectedCategory && (
+            <div className="mt-3 px-2">
+              <h4 className="text-[#FFE99A] mb-1">Subcategorias:</h4>
+              <ul className="flex flex-col gap-1">
+                {getSubFor(selectedCategory).map((s) => (
+                  <li
+                    key={s._id}
+                    className="px-2 py-1 bg-[#52280f] rounded-full text-xs text-center"
                   >
-                    R$ {p.price.toFixed(2).replace(".", ",")}
-                  </Link>
-                </div>
-              </div>
-            ))
-          ) : (
-            <p className="text-yellow-300 text-center w-full">
-              Nenhum produto encontrado
-            </p>
+                    {s.subCategory}
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
         </div>
       </div>
 
-      {/* Footer mobile com botões */}
+      <div className="flex-grow md:ml-[350px] p-4">
+        <div className="sticky top-0 bg-red-500 h-[250px] md:h-[400px] mb-4"></div>
+
+        <div className="columns-2 md:columns-5 gap-2">
+          {products.map((p) => (
+            <div
+              key={p._id}
+              className="break-inside-avoid mb-2 bg-[#070707] rounded-lg overflow-hidden"
+            >
+              <img
+                src={p.photos}
+                alt={p.product}
+                className="w-full object-cover"
+              />
+              <div className="p-2 text-[#FFE99A]">
+                <h2 className="font-semibold line-clamp-2">{p.product}</h2>
+                <Link
+                  to={p.link}
+                  target="_blank"
+                  className="mt-2 block bg-amber-900 text-center py-1 rounded"
+                >
+                  R$ {p.price.toFixed(2).replace(".", ",")}
+                </Link>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
       <div className="fixed bottom-0 w-full bg-[#361500] border-t border-[#52280f] flex justify-around items-center py-2 z-50 md:hidden">
         <Link
-          to="/home"
-          className="flex flex-col items-center text-white hover:text-yellow-300"
+          to="/"
+          className="flex flex-col items-center text-xs text-[#FFE99A]"
         >
-          <FiHome size={24} />
-          <span className="text-xs">Início</span>
+          <FiHome size={20} />
+          Início
         </Link>
-
         <button
-          className="flex flex-col items-center text-white hover:text-yellow-300 relative"
-          onClick={() => setShowSearch(!showSearch)}
+          onClick={() => {
+            setShowSearch(false);
+            setShowCategories((prev) => !prev);
+          }}
+          className="flex flex-col items-center text-xs text-[#FFE99A]"
         >
-          <FiSearch size={24} />
-          <span className="text-xs">Buscar</span>
-          <AnimatePresence>
-            {showSearch && (
-              <motion.div
-                ref={filterRef}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 30 }}
-                className="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 w-[90vw] max-w-[350px] p-4 bg-[#361500] rounded-lg border border-[#52280f] z-50 shadow-lg"
-              >
-                <input
-                  type="text"
-                  placeholder="Buscar produtos"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full p-2 rounded text-black"
-                />
-                <select
-                  value={selectedStore}
-                  onChange={(e) => setSelectedStore(e.target.value)}
-                  className="w-full mt-3 p-2 rounded text-black"
-                >
-                  <option value="">Todas as lojas</option>
-                  <option value="Submarino">Submarino</option>
-                  <option value="Americanas">Americanas</option>
-                  <option value="Amazon">Amazon</option>
-                </select>
-
-                <button
-                  className="mt-3 w-full bg-red-600 hover:bg-red-700 rounded p-2 text-white"
-                  onClick={() => {
-                    setSearchTerm("");
-                    setSelectedStore("");
-                    setSelectedCategories([]);
-                    setSelectedSubcategories([]);
-                  }}
-                >
-                  Limpar filtros
-                </button>
-
-                <hr className="my-3 border-yellow-300" />
-
-                <div>
-                  <h3 className="text-yellow-300 font-semibold mb-1">
-                    Categorias
-                  </h3>
-                  <ol className="flex flex-col gap-1 max-h-48 overflow-auto">
-                    {categoryOptions.map((cat) => (
-                      <li key={cat._id}>
-                        <div className="flex items-center justify-between">
-                          <label className="cursor-pointer flex items-center gap-2">
-                            <input
-                              type="checkbox"
-                              checked={selectedCategories.some(
-                                (c) => c._id === cat._id
-                              )}
-                              onChange={() => handleCategoryToggle(cat)}
-                            />
-                            {cat.category}
-                          </label>
-                          <button
-                            onClick={() => toggleCategory(cat._id)}
-                            className="text-yellow-300"
-                          >
-                            {expandedCategories[cat._id] ? (
-                              <IoChevronUp />
-                            ) : (
-                              <IoChevronDown />
-                            )}
-                          </button>
-                        </div>
-                        {expandedCategories[cat._id] && (
-                          <ul className="pl-6 text-sm text-[#FFE99A]">
-                            {getSubFor(cat._id).map((sub) => (
-                              <li key={sub._id}>
-                                <label className="cursor-pointer flex items-center gap-2">
-                                  <input
-                                    type="checkbox"
-                                    checked={selectedSubcategories.includes(
-                                      sub._id
-                                    )}
-                                    onChange={() =>
-                                      handleSubcategoryToggle(sub._id)
-                                    }
-                                  />
-                                  {sub.subCategory}
-                                </label>
-                              </li>
-                            ))}
-                          </ul>
-                        )}
-                      </li>
-                    ))}
-                  </ol>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          <FiGrid size={20} />
+          Categorias
         </button>
-
-        <Link
-          to="/grid"
-          className="flex flex-col items-center text-white hover:text-yellow-300"
+        <button
+          onClick={() => {
+            setShowCategories(false);
+            setShowSearch((prev) => !prev);
+          }}
+          className="flex flex-col items-center text-xs text-[#FFE99A]"
         >
-          <FiGrid size={24} />
-          <span className="text-xs">Categorias</span>
-        </Link>
-
+          <FiSearch size={20} />
+          Buscar
+        </button>
         <Link
           to="/perfil"
-          className="flex flex-col items-center text-white hover:text-yellow-300"
+          className="flex flex-col items-center text-xs text-[#FFE99A]"
         >
-          <FiUser size={24} />
-          <span className="text-xs">Perfil</span>
+          <FiUser size={20} />
+          Perfil
         </Link>
       </div>
+
+      <AnimatePresence>
+        {showCategories && (
+          <motion.div
+            initial={{ opacity: 0, y: "100%" }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: "100%" }}
+            className="fixed bottom-14 left-0 right-0 bg-[#3F2305] text-[#FFE99A] border-t border-[#52280f] p-4 z-40 max-h-[50vh] overflow-y-auto"
+          >
+            {!selectedCategory ? (
+              <ul className="flex flex-col gap-2">
+                {categoryOptions.map((c) => (
+                  <li
+                    key={c._id}
+                    className="p-2 bg-[#52280f] rounded text-center"
+                    onClick={() => setSelectedCategory(c._id)}
+                  >
+                    {c.category}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <>
+                <button
+                  className="mb-3 underline"
+                  onClick={() => setSelectedCategory(null)}
+                >
+                  Voltar às categorias
+                </button>
+                <ul className="flex flex-col gap-2 max-h-[200px] overflow-y-auto">
+                  {getSubFor(selectedCategory).map((s) => (
+                    <li
+                      key={s._id}
+                      className="p-2 bg-[#52280f] rounded text-center"
+                    >
+                      {s.subCategory}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showSearch && (
+          <motion.div
+            initial={{ opacity: 0, y: "100%" }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: "100%" }}
+            className="fixed bottom-14 left-0 right-0 bg-[#3F2305] text-[#FFE99A] border-t border-[#52280f] px-4 py-6 z-40"
+          >
+            <input
+              type="text"
+              placeholder="O que você está buscando?"
+              className="w-full px-4 py-3 rounded-full bg-[#52280f] text-white placeholder-[#ffe99a88] outline-none"
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
