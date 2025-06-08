@@ -84,22 +84,22 @@ export default function Test() {
           <div className="w-full h-full bg-red-600"></div>
         </div>
 
-        <div className="md:columns-5 columns-2 gap-2 md:px-2 md:pt-2 px-1 pt-1">
+        <div className="md:columns-5 columns-2 md:gap-2 gap-1 md:px-2 md:pt-2 px-1 pt-1">
           {products.map((product) => (
             <div
               key={product._id}
-              className="break-inside-avoid flex flex-col justify-center items-center md:mb-2 p-1"
+              className="break-inside-avoid flex flex-col justify-center items-center md:mb-2 mb-1"
             >
               <div className="w-full">
                 <img
-                  className="w-full object-cover rounded-t-xl"
+                  className="w-full object-cover"
                   loading="lazy"
                   src={product.photos}
                   alt={product.product}
                   title={product.product}
                 />
               </div>
-              <div className="w-full bg-[#070707] rounded-b-xl py-2 px-3 flex flex-col gap-2">
+              <div className="w-full bg-[#070707] py-2 px-3 flex flex-col gap-2">
                 <h2
                   className="text-[#FFE99A] font-semibold line-clamp-2 md:leading-5 leading-4 md:text-base text-sm"
                   title={product.product}
