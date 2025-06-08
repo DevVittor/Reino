@@ -82,23 +82,37 @@ export default function Test() {
         <div className="bg-red-500 md:h-[400px] h-[250px] p-2 flex justify-center items-center sticky top-0">
           <div className="w-full h-full bg-red-600"></div>
         </div>
-        <div className="flex-grow grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 px-2 py-2">
+        {/*grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5*/}
+        <div className="flex-grow md:columns-5 columns-2 gap-2 px-2 py-2">
           {products.map((product) => (
             <div
               key={product._id}
-              className="break-inside-avoid flex flex-col justify-center items-center"
+              className="break-inside-avoid flex flex-col justify-center items-center mb-2"
             >
-              <div className="w-full bg-[#361500]">
+              <div className="w-full">
                 <img
-                  className="w-full h-[150px] object-cover rounded-t-xl"
+                  className="w-full object-cover rounded-t-xl"
                   src={product.photos}
                   alt={product.product}
+                  title={product.product}
                 />
               </div>
-              <div className="w-full bg-[#070707] rounded-b-xl py-2 px-3">
-                <h2 className="text-[#FFE99A] font-semibold line-clamp-2 leading-5">
+              <div className="w-full bg-[#070707] rounded-b-xl py-2 px-3 flex flex-col gap-2">
+                <h2
+                  className="text-[#FFE99A] font-semibold line-clamp-2 md:leading-5 leading-4 md:text-base text-sm"
+                  title={product.product}
+                >
                   {product.product}
                 </h2>
+                <Link
+                  to={product.link}
+                  target="_blank"
+                  className="bg-amber-900 px-3 py-1 rounded flex-grow text-[#FFE99A] text-pretty flex justify-center items-center truncate font-bold"
+                  title={product.price}
+                >
+                  <span className="mx-1">R$</span>
+                  {product.price.toFixed(2).replace(".", ",")}
+                </Link>
               </div>
             </div>
           ))}
