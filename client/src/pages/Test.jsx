@@ -3,9 +3,13 @@ import { Link } from "react-router-dom";
 import Logo from "../assets/logo.svg";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { FiHome, FiSearch, FiUser, FiGrid } from "react-icons/fi";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function Test() {
   const [products, setProducts] = useState([]);
+  const [showCategories, setShowCategories] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -22,8 +26,13 @@ export default function Test() {
     fetchProducts();
   }, []);
 
+  const fakeCategories = Array.from({ length: 5 }).map((_, i) => ({
+    name: `Categoria ${i + 1}`,
+    sub: [`Subcategoria A${i + 1}`, `Subcategoria B${i + 1}`],
+  }));
+
   return (
-    <div className="flex flex-col md:flex-row bg-[#3F2305] min-h-screen">
+    <div className="flex flex-col md:flex-row bg-[#3F2305] min-h-screen pb-14 md:pb-0">
       {/* Sidebar (Desktop) */}
       <div className="hidden md:flex fixed md:w-[350px] w-full min-h-screen">
         <div className="flex flex-col justify-between items-center gap-10 p-5 min-h-screen bg-[#361500] border-r-2 border-[#52280f] w-full">
@@ -48,12 +57,12 @@ export default function Test() {
             </div>
             <div className="w-full overflow-y-auto">
               <ol className="flex flex-col gap-2 w-full">
-                {Array.from({ length: 12 }).map((_, index) => (
+                {fakeCategories.map((cat, index) => (
                   <li
                     key={index}
                     className="text-[#FFE99A] bg-[#3F2305] w-full px-3 py-1 rounded-full text-center"
                   >
-                    Categoria {index + 1}
+                    {cat.name}
                   </li>
                 ))}
               </ol>
@@ -80,7 +89,7 @@ export default function Test() {
 
       {/* Conteúdo principal */}
       <div className="flex-grow md:ml-[350px]">
-        <div className="bg-red-500 md:h-[400px] h-[250px] p-2 flex justify-center items-center sticky top-0">
+        <div className="bg-red-500 md:h-[400px] h-[250px] p-2 flex justify-center items-center sticky top-0 z-10">
           <div className="w-full h-full bg-red-600"></div>
         </div>
 
@@ -109,7 +118,7 @@ export default function Test() {
                 <Link
                   to={product.link}
                   target="_blank"
-                  className="bg-amber-900 px-3 py-1 rounded flex-grow text-[#FFE99A] flex justify-center items-center truncate font-bold"
+                  className="bg-amber-900 px-3 py-1 flex-grow text-[#FFE99A] flex justify-center items-center truncate font-bold"
                   title={product.price}
                 >
                   <span className="mx-1">R$</span>
@@ -122,16 +131,71 @@ export default function Test() {
       </div>
 
       {/* Bottom Navbar para Mobile */}
-      <div className="md:hidden fixed bottom-0 w-full bg-[#361500] border-t border-[#52280f] flex justify-around items-center py-2">
-        <Link to="/" className="text-[#FFE99A] text-sm font-semibold">
-          Início
+      <div className="md:hidden fixed bottom-0 w-full bg-[#361500] border-t border-[#52280f] flex justify-around items-center py-2 z-50">
+        <Link
+          to="/"
+          className="text-[#FFE99A] flex flex-col items-center text-xs"
+        >
+          <FiHome size={20} /> Início
         </Link>
-        <button className="text-[#FFE99A] text-sm font-semibold">
-          Categorias
+        <button
+          onClick={() => setShowCategories((prev) => !prev)}
+          className="text-[#FFE99A] flex flex-col items-center text-xs"
+        >
+          <FiGrid size={20} /> Categorias
         </button>
-        <button className="text-[#FFE99A] text-sm font-semibold">Buscar</button>
-        <button className="text-[#FFE99A] text-sm font-semibold">Perfil</button>
+        <button className="text-[#FFE99A] flex flex-col items-center text-xs">
+          <FiSearch size={20} /> Buscar
+        </button>
+        <button className="text-[#FFE99A] flex flex-col items-center text-xs">
+          <FiUser size={20} /> Perfil
+        </button>
       </div>
+
+      {/* Menu de Categorias */}
+      <AnimatePresence>
+        {showCategories && (
+          <motion.div
+            initial={{ opacity: 0, y: "100%" }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: "100%" }}
+            className="fixed bottom-14 left-0 right-0 bg-[#3F2305] text-[#FFE99A] border-t border-[#52280f] p-4 z-40 max-h-[60vh] overflow-y-auto"
+          >
+            {!selectedCategory ? (
+              <ul className="flex flex-col gap-2">
+                {fakeCategories.map((cat, i) => (
+                  <li
+                    key={i}
+                    className="p-2 bg-[#52280f] rounded text-center"
+                    onClick={() => setSelectedCategory(cat)}
+                  >
+                    {cat.name}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <>
+                <button
+                  className="mb-3 text-sm underline"
+                  onClick={() => setSelectedCategory(null)}
+                >
+                  Voltar às categorias
+                </button>
+                <ul className="flex flex-col gap-2">
+                  {selectedCategory.sub.map((sub, idx) => (
+                    <li
+                      key={idx}
+                      className="p-2 bg-[#52280f] rounded text-center"
+                    >
+                      {sub}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
