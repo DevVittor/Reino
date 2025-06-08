@@ -10,6 +10,7 @@ export default function Test() {
   const [categoryOptions, setCategoryOptions] = useState([]);
   const [subcategories, setSubcategories] = useState([]);
   const [showCategories, setShowCategories] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
 
   const API = "https://reino-production.up.railway.app";
@@ -41,13 +42,16 @@ export default function Test() {
 
   return (
     <div className="flex flex-col md:flex-row bg-[#3F2305] min-h-screen pb-14 md:pb-0">
-      <div className="hidden md:flex fixed left-0 top-0 w-[350px] h-full bg-[#361500] border-r-2 border-[#52280f] p-5 flex flex-col justify-between items-center">
-        <div className="w-full overflow-y-auto">
+      <div className="hidden md:flex fixed left-0 top-0 w-[350px] h-full bg-[#361500] border-r-2 border-[#52280f] p-5 flex-col justify-between">
+        <div className="w-full flex justify-center mb-6">
+          <img src={Logo} alt="Logo" className="h-16" />
+        </div>
+        <div className="flex-1 overflow-y-auto pr-1">
           <ol className="flex flex-col gap-2">
             {categoryOptions.map((c) => (
               <li
                 key={c._id}
-                className={`px-3 py-1 rounded-full w-full text-center cursor-pointer ${
+                className={`px-3 py-1 rounded-full text-center cursor-pointer ${
                   selectedCategory === c._id ? "bg-gray-700" : "bg-[#3F2305]"
                 }`}
                 onClick={() =>
@@ -59,7 +63,7 @@ export default function Test() {
             ))}
           </ol>
           {selectedCategory && (
-            <div className="mt-3 px-4">
+            <div className="mt-3 px-2">
               <h4 className="text-[#FFE99A] mb-1">Subcategorias:</h4>
               <ul className="flex flex-col gap-1">
                 {getSubFor(selectedCategory).map((s) => (
@@ -114,19 +118,25 @@ export default function Test() {
           Início
         </Link>
         <button
-          onClick={() => setShowCategories((prev) => !prev)}
+          onClick={() => {
+            setShowSearch(false);
+            setShowCategories((prev) => !prev);
+          }}
           className="flex flex-col items-center text-xs text-[#FFE99A]"
         >
           <FiGrid size={20} />
           Categorias
         </button>
-        <Link
-          to="/buscar"
+        <button
+          onClick={() => {
+            setShowCategories(false);
+            setShowSearch((prev) => !prev);
+          }}
           className="flex flex-col items-center text-xs text-[#FFE99A]"
         >
           <FiSearch size={20} />
           Buscar
-        </Link>
+        </button>
         <Link
           to="/perfil"
           className="flex flex-col items-center text-xs text-[#FFE99A]"
@@ -142,7 +152,7 @@ export default function Test() {
             initial={{ opacity: 0, y: "100%" }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: "100%" }}
-            className="fixed bottom-14 left-0 right-0 bg-[#3F2305] text-[#FFE99A] border-t border-[#52280f] p-4 z-40 max-h-[60vh] overflow-y-auto"
+            className="fixed bottom-14 left-0 right-0 bg-[#3F2305] text-[#FFE99A] border-t border-[#52280f] p-4 z-40 max-h-[50vh] overflow-y-auto"
           >
             {!selectedCategory ? (
               <ul className="flex flex-col gap-2">
@@ -164,7 +174,7 @@ export default function Test() {
                 >
                   Voltar às categorias
                 </button>
-                <ul className="flex flex-col gap-2">
+                <ul className="flex flex-col gap-2 max-h-[200px] overflow-y-auto">
                   {getSubFor(selectedCategory).map((s) => (
                     <li
                       key={s._id}
@@ -176,6 +186,23 @@ export default function Test() {
                 </ul>
               </>
             )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showSearch && (
+          <motion.div
+            initial={{ opacity: 0, y: "100%" }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: "100%" }}
+            className="fixed bottom-14 left-0 right-0 bg-[#3F2305] text-[#FFE99A] border-t border-[#52280f] px-4 py-6 z-40"
+          >
+            <input
+              type="text"
+              placeholder="O que você está buscando?"
+              className="w-full px-4 py-3 rounded-full bg-[#52280f] text-white placeholder-[#ffe99a88] outline-none"
+            />
           </motion.div>
         )}
       </AnimatePresence>
