@@ -14,7 +14,6 @@ export default function Test() {
           "https://reino-production.up.railway.app/api/product/list"
         );
         setProducts(response.data.list || []);
-        console.log(response.data.list);
       } catch (error) {
         console.error("Erro ao buscar produtos:", error);
       }
@@ -24,9 +23,10 @@ export default function Test() {
   }, []);
 
   return (
-    <div className="flex gap-3 bg-[#3F2305]">
-      <div className="fixed md:w-[350px] w-[300px] min-h-screen">
-        <div className="flex flex-col justify-between items-center gap-10 p-5 min-h-screen bg-[#361500] md:border-none border-r-2 border-[#52280f]">
+    <div className="flex flex-col md:flex-row bg-[#3F2305] min-h-screen">
+      {/* Sidebar (Desktop) */}
+      <div className="hidden md:flex fixed md:w-[350px] w-full min-h-screen">
+        <div className="flex flex-col justify-between items-center gap-10 p-5 min-h-screen bg-[#361500] border-r-2 border-[#52280f] w-full">
           <div className="flex justify-center items-center flex-col gap-1 h-1/5 w-full text-center">
             <Link to="/">
               <img src={Logo} alt="Logo" className="w-24 rounded-full" />
@@ -51,7 +51,7 @@ export default function Test() {
                 {Array.from({ length: 12 }).map((_, index) => (
                   <li
                     key={index}
-                    className="text-[#FFE99A] bg-[#3F2305] flex-grow w-full px-3 py-1 rounded-full text-center"
+                    className="text-[#FFE99A] bg-[#3F2305] w-full px-3 py-1 rounded-full text-center"
                   >
                     Categoria {index + 1}
                   </li>
@@ -78,12 +78,13 @@ export default function Test() {
         </div>
       </div>
 
-      <div className="flex-grow flex-col gap-2 justify-center items-center md:ml-[350px]">
+      {/* Conteúdo principal */}
+      <div className="flex-grow md:ml-[350px]">
         <div className="bg-red-500 md:h-[400px] h-[250px] p-2 flex justify-center items-center sticky top-0">
           <div className="w-full h-full bg-red-600"></div>
         </div>
-        {/*grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5*/}
-        <div className="flex-grow md:columns-5 columns-2 gap-2 px-2 py-2">
+
+        <div className="md:columns-5 columns-2 gap-2 px-2 py-2">
           {products.map((product) => (
             <div
               key={product._id}
@@ -107,7 +108,7 @@ export default function Test() {
                 <Link
                   to={product.link}
                   target="_blank"
-                  className="bg-amber-900 px-3 py-1 rounded flex-grow text-[#FFE99A] text-pretty flex justify-center items-center truncate font-bold"
+                  className="bg-amber-900 px-3 py-1 rounded flex-grow text-[#FFE99A] flex justify-center items-center truncate font-bold"
                   title={product.price}
                 >
                   <span className="mx-1">R$</span>
@@ -117,6 +118,18 @@ export default function Test() {
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Bottom Navbar para Mobile */}
+      <div className="md:hidden fixed bottom-0 w-full bg-[#361500] border-t border-[#52280f] flex justify-around items-center py-2">
+        <Link to="/" className="text-[#FFE99A] text-sm font-semibold">
+          Início
+        </Link>
+        <button className="text-[#FFE99A] text-sm font-semibold">
+          Categorias
+        </button>
+        <button className="text-[#FFE99A] text-sm font-semibold">Buscar</button>
+        <button className="text-[#FFE99A] text-sm font-semibold">Perfil</button>
       </div>
     </div>
   );
