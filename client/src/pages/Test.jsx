@@ -1,10 +1,11 @@
 import { Link } from "react-router-dom";
 import Logo from "../assets/logo.svg";
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { FiHome, FiSearch, FiGrid } from "react-icons/fi";
 import { AiOutlineDashboard } from "react-icons/ai";
 import { motion, AnimatePresence } from "framer-motion";
+import { IoClose } from "react-icons/io5";
 
 export default function Test() {
   const [products, setProducts] = useState([]);
@@ -14,93 +15,26 @@ export default function Test() {
   const [showSearch, setShowSearch] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
 
-  const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
-
   const API = "https://reino-production.up.railway.app";
 
-  // Busca categorias e subcategorias apenas 1 vez
   useEffect(() => {
-    const fetchAll = async () => {
-      try {
-        const [{ data: cat }, { data: sub }] = await Promise.all([
-          axios.get(`${API}/api/category/list`),
-          axios.get(`${API}/api/subcategory/list`),
-        ]);
-        setCategoryOptions(cat.list);
-        setSubcategories(sub.list);
-      } catch (e) {
-        console.error(e);
-      }
-    };
     fetchAll();
   }, []);
 
-  // Busca produtos pela página (carregamento incremental)
-  const fetchProducts = useCallback(
-    async (pageToLoad) => {
-      if (loading) return;
-      setLoading(true);
-      try {
-        const params = {
-          page: pageToLoad,
-          limit: 20,
-        };
-        if (selectedCategory) params.categories = selectedCategory;
-
-        const { data } = await axios.get(`${API}/api/product/list`, { params });
-        if (pageToLoad === 1) {
-          setProducts(data.list || []);
-        } else {
-          setProducts((prev) => [...prev, ...(data.list || [])]);
-        }
-
-        // Se recebeu menos do que o limite, não tem mais para carregar
-        if (!data.list || data.list.length < 20) {
-          setHasMore(false);
-        } else {
-          setHasMore(true);
-        }
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [API, loading, selectedCategory]
-  );
-
-  // Quando muda a categoria, reseta página e produtos
-  useEffect(() => {
-    setPage(1);
-    setHasMore(true);
-    fetchProducts(1);
-  }, [selectedCategory, fetchProducts]);
-
-  // Observer para carregar mais quando o sentinel aparecer
-  const observer = useRef();
-  const lastProductRef = useCallback(
-    (node) => {
-      if (loading) return;
-      if (observer.current) observer.current.disconnect();
-
-      observer.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && hasMore) {
-          setPage((prevPage) => prevPage + 1);
-        }
-      });
-
-      if (node) observer.current.observe(node);
-    },
-    [loading, hasMore]
-  );
-
-  // Quando a página muda, busca mais produtos (exceto na inicial, que já buscou)
-  useEffect(() => {
-    if (page === 1) return;
-    fetchProducts(page);
-  }, [page, fetchProducts]);
+  const fetchAll = async () => {
+    try {
+      const [{ data: prod }, { data: cat }, { data: sub }] = await Promise.all([
+        axios.get(`${API}/api/product/list`),
+        axios.get(`${API}/api/category/list`),
+        axios.get(`${API}/api/subcategory/list`),
+      ]);
+      setProducts(prod.list || []);
+      setCategoryOptions(cat.list);
+      setSubcategories(sub.list);
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   const getSubFor = (catId) => {
     const cat = categoryOptions.find((c) => c._id === catId);
@@ -158,75 +92,32 @@ export default function Test() {
         </div>
 
         <div className="columns-2 md:columns-5 md:gap-2 gap-1 md:px-2 md:pt-2 p-1">
-          {products.map((p, i) => {
-            if (i === products.length - 1) {
-              // Referência no último produto para o observer
-              return (
-                <div
-                  ref={lastProductRef}
-                  key={p._id}
-                  className="break-inside-avoid md:mb-2 mb-1 bg-[#070707] overflow-hidden"
+          {products.map((p) => (
+            <div
+              key={p._id}
+              className="break-inside-avoid md:mb-2 mb-1 bg-[#070707] overflow-hidden"
+            >
+              <img
+                src={p.photos}
+                alt={p.product}
+                className="w-full object-cover"
+              />
+              <div className="p-2 text-[#FFE99A]">
+                <h2 className="font-semibold line-clamp-2 md:leading-5 leading-4 md:text-base text-sm">
+                  {p.product}
+                </h2>
+                <Link
+                  to={p.link}
+                  target="_blank"
+                  className="mt-2 block bg-amber-900 text-center py-1 px-3"
                 >
-                  <img
-                    src={p.photos}
-                    alt={p.product}
-                    className="w-full object-cover"
-                  />
-                  <div className="p-2 text-[#FFE99A]">
-                    <h2 className="font-semibold line-clamp-2 md:leading-5 leading-4 md:text-base text-sm">
-                      {p.product}
-                    </h2>
-                    <Link
-                      to={p.link}
-                      target="_blank"
-                      className="mt-2 block bg-amber-900 text-center py-1 px-3"
-                    >
-                      R$ {p.price.toFixed(2).replace(".", ",")}
-                    </Link>
-                  </div>
-                </div>
-              );
-            } else {
-              return (
-                <div
-                  key={p._id}
-                  className="break-inside-avoid md:mb-2 mb-1 bg-[#070707] overflow-hidden"
-                >
-                  <img
-                    src={p.photos}
-                    alt={p.product}
-                    className="w-full object-cover"
-                  />
-                  <div className="p-2 text-[#FFE99A]">
-                    <h2 className="font-semibold line-clamp-2 md:leading-5 leading-4 md:text-base text-sm">
-                      {p.product}
-                    </h2>
-                    <Link
-                      to={p.link}
-                      target="_blank"
-                      className="mt-2 block bg-amber-900 text-center py-1 px-3"
-                    >
-                      R$ {p.price.toFixed(2).replace(".", ",")}
-                    </Link>
-                  </div>
-                </div>
-              );
-            }
-          })}
-          {loading && (
-            <div className="text-center col-span-full text-[#FFE99A] mt-2">
-              Carregando...
+                  R$ {p.price.toFixed(2).replace(".", ",")}
+                </Link>
+              </div>
             </div>
-          )}
-          {!hasMore && (
-            <div className="text-center col-span-full text-[#FFE99A] mt-2">
-              Não há mais produtos para carregar.
-            </div>
-          )}
+          ))}
         </div>
       </div>
-
-      {/* ... o resto do seu layout continua igual */}
 
       <div className="fixed bottom-0 w-full bg-[#361500] border-t border-[#52280f] flex justify-around items-center py-2 z-50 md:hidden">
         <Link
@@ -271,7 +162,7 @@ export default function Test() {
             initial={{ opacity: 0, y: "100%" }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: "100%" }}
-            className="fixed bottom-14 left-0 right-0 bg-[#3F2305] text-[#FFE99A] border-t border-[#52280f] p-4 z-40 max-h-[50vh] overflow-y-auto"
+            className="fixed bottom-14 left-0 right-0  bg-[#3F2305] text-[#FFE99A] border-t border-[#52280f] p-4 z-40 max-h-[50vh] overflow-y-auto"
           >
             {!selectedCategory ? (
               <div className="flex flex-col gap-3">
