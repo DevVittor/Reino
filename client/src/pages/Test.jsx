@@ -130,7 +130,7 @@ export default function Test() {
 
   return (
     <div className="flex flex-col md:flex-row bg-[#3F2305] min-h-screen pb-14 md:pb-0">
-      <div className="hidden md:flex fixed left-0 top-0 w-[350px] h-full bg-gradient-to-b from-[#3F2305] to-[#1F1100] p-6 flex-col gap-6 shadow-xl">
+      <div className="hidden md:flex fixed left-0 top-0 w-[350px] h-full bg-gradient-to-b from-[#3F2305] to-[#1F1100] p-6 flex-col gap-3 shadow-xl">
         <div className="flex flex-col items-center text-center">
           <Link to="/" className="flex flex-col items-center text-center">
             <img src={Logo} alt="Logo" className="h-16 mb-2" />
