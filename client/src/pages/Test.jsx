@@ -1,11 +1,10 @@
 import { Link } from "react-router-dom";
 import Logo from "../assets/logo.svg";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { FiHome, FiSearch, FiGrid } from "react-icons/fi";
 import { AiOutlineDashboard } from "react-icons/ai";
 import { motion, AnimatePresence } from "framer-motion";
-import { IoClose } from "react-icons/io5";
 
 export default function Test() {
   const [products, setProducts] = useState([]);
@@ -14,27 +13,104 @@ export default function Test() {
   const [showCategories, setShowCategories] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const loadingRef = useRef(false);
 
   const API = "https://reino-production.up.railway.app";
 
+  const limit = windowWidth >= 768 ? 15 : 10;
+
   useEffect(() => {
-    fetchAll();
+    setPage(1);
+    setProducts([]);
+    setHasMore(true);
+  }, [windowWidth]);
+
+  useEffect(() => {
+    fetchInitialData();
   }, []);
 
-  const fetchAll = async () => {
+  useEffect(() => {
+    fetchProducts(page);
+  }, [page, windowWidth]);
+
+  useEffect(() => {
+    function handleResize() {
+      setWindowWidth(window.innerWidth);
+    }
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const fetchInitialData = async () => {
     try {
-      const [{ data: prod }, { data: cat }, { data: sub }] = await Promise.all([
-        axios.get(`${API}/api/product/list`),
+      const [{ data: cat }, { data: sub }] = await Promise.all([
         axios.get(`${API}/api/category/list`),
         axios.get(`${API}/api/subcategory/list`),
       ]);
-      setProducts(prod.list || []);
       setCategoryOptions(cat.list);
       setSubcategories(sub.list);
     } catch (e) {
       console.error(e);
     }
   };
+
+  const fetchProducts = async (pageToFetch) => {
+    if (loadingRef.current) return;
+    if (!hasMore && pageToFetch !== 1) return;
+
+    loadingRef.current = true;
+    try {
+      const params = { page: pageToFetch, limit };
+      if (selectedCategory) params.categories = selectedCategory;
+
+      const { data } = await axios.get(`${API}/api/product/list`, { params });
+
+      if (pageToFetch === 1) {
+        setProducts(data.list);
+      } else {
+        setProducts((prev) => {
+          const newProducts = data.list.filter(
+            (newP) => !prev.some((oldP) => oldP._id === newP._id)
+          );
+          return [...prev, ...newProducts];
+        });
+      }
+
+      if (data.list.length < limit) {
+        setHasMore(false);
+      } else {
+        setHasMore(true);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    loadingRef.current = false;
+  };
+
+  useEffect(() => {
+    setPage(1);
+    setProducts([]);
+    setHasMore(true);
+    fetchProducts(1);
+  }, [selectedCategory]);
+
+  useEffect(() => {
+    const onScroll = () => {
+      if (
+        window.innerHeight + window.scrollY >=
+          document.body.offsetHeight - 300 &&
+        hasMore &&
+        !loadingRef.current
+      ) {
+        setPage((prev) => prev + 1);
+      }
+    };
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [hasMore]);
 
   const getSubFor = (catId) => {
     const cat = categoryOptions.find((c) => c._id === catId);
