@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { FiHome, FiSearch, FiGrid } from "react-icons/fi";
 import { AiOutlineDashboard } from "react-icons/ai";
+import { FaCircleUser } from "react-icons/fa6";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -191,22 +192,20 @@ export default function Test() {
           )}
         </div>
 
-        <Link
-          to="/painel"
-          className="bg-amber-950 hover:bg-amber-900 transition-colors ease-in-out duration-300 flex gap-3 justify-center items-center p-3 rounded-xl"
-        >
-          <div>
-            <img
-              className="rounded-full object-cover h-12 w-12 border-2 border-amber-800"
-              src="https://images.pexels.com/photos/39866/entrepreneur-startup-start-up-man-39866.jpeg"
-              alt=""
-            />
-          </div>
-          <div className="flex flex-col">
-            <h3 className="text-[#FFE99A] font-medium">Painel de Controle</h3>
-            <span className="font-light text-[#FFE99A] text-xs">Acessar</span>
-          </div>
-        </Link>
+        <div className="flex justify-center items-center">
+          <Link
+            to="/painel"
+            className="w-fit bg-amber-950 hover:bg-amber-900 transition-colors ease-in-out duration-300 flex gap-3 justify-center items-center p-3 rounded-xl"
+          >
+            <div>
+              <FaCircleUser className="text-3xl text-[#FFE99A]" />
+            </div>
+            <div className="flex flex-col">
+              <h3 className="text-[#FFE99A] font-medium">Painel de Controle</h3>
+              <span className="font-light text-[#FFE99A] text-xs">Acessar</span>
+            </div>
+          </Link>
+        </div>
       </div>
 
       <div className="flex-grow md:ml-[350px]">
