@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import Logo from "../assets/logo.svg";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { FiHome, FiSearch, FiGrid } from "react-icons/fi";
 import { AiOutlineDashboard } from "react-icons/ai";
@@ -14,33 +14,84 @@ export default function Test() {
   const [showCategories, setShowCategories] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const loaderRef = useRef();
 
   const API = "https://reino-production.up.railway.app";
 
+  const limit = window.innerWidth < 768 ? 10 : 15;
+
   useEffect(() => {
-    const fetchAll = async () => {
+    const fetchInitial = async () => {
       try {
-        const [{ data: prod }, { data: cat }, { data: sub }] =
-          await Promise.all([
-            axios.get(`${API}/api/product/list`),
-            axios.get(`${API}/api/category/list`),
-            axios.get(`${API}/api/subcategory/list`),
-          ]);
-        setProducts(prod.list || []);
+        const [{ data: cat }, { data: sub }] = await Promise.all([
+          axios.get(`${API}/api/category/list`),
+          axios.get(`${API}/api/subcategory/list`),
+        ]);
         setCategoryOptions(cat.list);
         setSubcategories(sub.list);
       } catch (e) {
         console.error(e);
       }
     };
-    fetchAll();
+    fetchInitial();
   }, []);
+
+  const fetchProducts = async (currentPage) => {
+    try {
+      const params = {
+        page: currentPage,
+        limit,
+      };
+      if (searchTerm) params.search = searchTerm;
+      if (selectedCategory) params.categories = selectedCategory;
+
+      const { data } = await axios.get(`${API}/api/product/list`, {
+        params,
+      });
+
+      setProducts((prev) => [...prev, ...(data.list || [])]);
+      setHasMore((data.list || []).length === limit);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts(page);
+  }, [page]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          setPage((prev) => prev + 1);
+        }
+      },
+      { threshold: 1 }
+    );
+    if (loaderRef.current) observer.observe(loaderRef.current);
+    return () => loaderRef.current && observer.unobserve(loaderRef.current);
+  }, [hasMore]);
 
   const getSubFor = (catId) => {
     const cat = categoryOptions.find((c) => c._id === catId);
     if (!cat || !cat.subCategoryId) return [];
     return subcategories.filter((s) => cat.subCategoryId.includes(s._id));
   };
+
+  const handleSearch = () => {
+    setProducts([]);
+    setPage(1);
+  };
+
+  useEffect(() => {
+    if (page === 1) {
+      fetchProducts(1);
+    }
+  }, [searchTerm, selectedCategory]);
 
   return (
     <div className="flex flex-col md:flex-row bg-[#3F2305] min-h-screen pb-14 md:pb-0">
@@ -56,29 +107,18 @@ export default function Test() {
                 className={`px-3 py-1 rounded-full text-center cursor-pointer ${
                   selectedCategory === c._id ? "bg-gray-700" : "bg-[#3F2305]"
                 }`}
-                onClick={() =>
-                  setSelectedCategory(selectedCategory === c._id ? null : c._id)
-                }
+                onClick={() => {
+                  setSelectedCategory(
+                    selectedCategory === c._id ? null : c._id
+                  );
+                  setProducts([]);
+                  setPage(1);
+                }}
               >
                 {c.category}
               </li>
             ))}
           </ol>
-          {selectedCategory && (
-            <div className="mt-3 px-2">
-              <h4 className="text-[#FFE99A] mb-1">Subcategorias:</h4>
-              <ul className="flex flex-col gap-1">
-                {getSubFor(selectedCategory).map((s) => (
-                  <li
-                    key={s._id}
-                    className="px-2 py-1 bg-[#52280f] rounded-full text-xs text-center"
-                  >
-                    {s.subCategory}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
         </div>
       </div>
 
@@ -88,7 +128,7 @@ export default function Test() {
             <img src={Logo} alt="Logo" className="h-14" />
             <h2 className="text-4xl font-bold text-[#FFE99A]">Reino Animal</h2>
           </div>
-          <div className="bg-red-500 h-[200px] md:h-[400px] w-full px-3 py-1 "></div>
+          <div className="bg-red-500 h-[200px] md:h-[400px] w-full px-3 py-1"></div>
         </div>
 
         <div className="columns-2 md:columns-5 md:gap-2 gap-1 md:px-2 md:pt-2 p-1">
@@ -117,6 +157,7 @@ export default function Test() {
             </div>
           ))}
         </div>
+        <div ref={loaderRef} className="h-10"></div>
       </div>
 
       <div className="fixed bottom-0 w-full bg-[#361500] border-t border-[#52280f] flex justify-around items-center py-2 z-50 md:hidden">
@@ -157,52 +198,6 @@ export default function Test() {
       </div>
 
       <AnimatePresence>
-        {showCategories && (
-          <motion.div
-            initial={{ opacity: 0, y: "100%" }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: "100%" }}
-            className="fixed bottom-14 left-0 right-0 bg-[#3F2305] text-[#FFE99A] border-t border-[#52280f] p-4 z-40 max-h-[50vh] overflow-y-auto"
-          >
-            {!selectedCategory ? (
-              <div className="flex flex-col gap-3">
-                <ul className="flex flex-col gap-2">
-                  {categoryOptions.map((c) => (
-                    <li
-                      key={c._id}
-                      className="p-2 bg-[#52280f] rounded text-center"
-                      onClick={() => setSelectedCategory(c._id)}
-                    >
-                      {c.category}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ) : (
-              <>
-                <button
-                  className="mb-3 underline"
-                  onClick={() => setSelectedCategory(null)}
-                >
-                  Voltar às categorias
-                </button>
-                <ul className="flex flex-col gap-2 max-h-[200px] overflow-y-auto">
-                  {getSubFor(selectedCategory).map((s) => (
-                    <li
-                      key={s._id}
-                      className="p-2 bg-[#52280f] rounded text-center"
-                    >
-                      {s.subCategory}
-                    </li>
-                  ))}
-                </ul>
-              </>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
         {showSearch && (
           <motion.div
             initial={{ opacity: 0, y: "100%" }}
@@ -214,6 +209,9 @@ export default function Test() {
               type="text"
               placeholder="O que você está buscando?"
               className="w-full px-4 py-3 rounded-full bg-[#52280f] text-white placeholder-[#ffe99a88] outline-none"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
             />
           </motion.div>
         )}
