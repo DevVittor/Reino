@@ -82,7 +82,13 @@ export default function Test() {
       </div>
 
       <div className="flex-grow md:ml-[350px]">
-        <div className="sticky top-0 bg-red-500 h-[250px] md:h-[400px]"></div>
+        <div className="sticky top-0 flex justify-center items-center flex-col z-50">
+          <div className="flex justify-center items-center gap-1 w-full md:hidden px-3 py-1 bg-[#361500] border-b border-[#52280f]">
+            <img src={Logo} alt="Logo" className="h-14" />
+            <h2 className="text-4xl font-bold text-[#FFE99A]">Reino Animal</h2>
+          </div>
+          <div className="bg-red-500 h-[200px] md:h-[400px] w-full px-3 py-1 "></div>
+        </div>
 
         <div className="columns-2 md:columns-5 md:gap-2 gap-1 md:px-2 md:pt-2 p-1">
           {products.map((p) => (
