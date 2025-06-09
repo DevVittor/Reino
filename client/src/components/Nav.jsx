@@ -11,10 +11,8 @@ export default function Nav() {
         resultPath === "/" ? "flex-col" : "md:flex-row flex-col "
       } flex justify-between md:min-h-screen min-h-dvh bg-zinc-50`}
     >
-      {resultPath === "/" && <NavBar />}
       {resultPath.startsWith("/painel") && <NavBarDashboard />}
       <Outlet />
-      {resultPath === "/" && <FooterBar />}
     </div>
   );
 }

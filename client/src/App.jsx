@@ -41,7 +41,7 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Nav />}>
-          <Route index element={<Home />} />
+          <Route index element={<Test />} />
           <Route path="by-test" element={<Beta />} />
           <Route path="nada" element={<Slider />} />
           <Route path="cadastrar" element={<Register />} />

@@ -238,6 +238,27 @@ export default function Test() {
               ))}
             </Swiper>
           </div>
+          {showCategories && (
+            <div className="w-full overflow-x-auto bg-[#1F1100] border-y border-[#52280f] py-2 px-2 whitespace-nowrap max-h-[60px] scrollbar-thin scrollbar-thumb-[#52280f] scrollbar-track-transparent">
+              {categoryOptions.map((c) => (
+                <button
+                  key={c._id}
+                  onClick={() =>
+                    setSelectedCategory(
+                      selectedCategory === c._id ? null : c._id
+                    )
+                  }
+                  className={`inline-block text-sm font-medium px-4 py-1 rounded-full mx-1 shadow-md ${
+                    selectedCategory === c._id
+                      ? "bg-[#FFE99A] text-[#361500]"
+                      : "bg-[#3F2305] text-[#FFE99A]"
+                  }`}
+                >
+                  {c.category}
+                </button>
+              ))}
+            </div>
+          )}
           {showSearch && (
             <div className="w-full max-w-6xl mx-auto p-2">
               <input
