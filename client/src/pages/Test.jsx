@@ -88,7 +88,7 @@ export default function Test() {
           {products.map((p) => (
             <div
               key={p._id}
-              className="break-inside-avoid mb-2 bg-[#070707] overflow-hidden"
+              className="break-inside-avoid md:mb-2 mb-1 bg-[#070707] overflow-hidden"
             >
               <img
                 src={p.photos}
