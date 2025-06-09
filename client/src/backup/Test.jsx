@@ -1,25 +1,24 @@
 import { Link } from "react-router-dom";
 import Logo from "../assets/logo.svg";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
-import { FiHome, FiSearch, FiGrid } from "react-icons/fi";
-import { AiOutlineDashboard } from "react-icons/ai";
-import { motion, AnimatePresence } from "framer-motion";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import { FreeMode, Pagination, Navigation } from "swiper/modules";
 
 export default function Test() {
   const [products, setProducts] = useState([]);
   const [categoryOptions, setCategoryOptions] = useState([]);
   const [subcategories, setSubcategories] = useState([]);
-  const [showCategories, setShowCategories] = useState(false);
-  const [showSearch, setShowSearch] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const loadingRef = useRef(false);
+  const [featuredProducts, setFeaturedProducts] = useState([]);
 
   const API = "https://reino-production.up.railway.app";
-
   const limit = windowWidth >= 768 ? 15 : 10;
 
   useEffect(() => {
@@ -30,11 +29,12 @@ export default function Test() {
 
   useEffect(() => {
     fetchInitialData();
+    fetchFeaturedProducts();
   }, []);
 
   useEffect(() => {
     fetchProducts(page);
-  }, [page, windowWidth]);
+  }, [page, windowWidth, selectedCategory]);
 
   useEffect(() => {
     function handleResize() {
@@ -43,6 +43,19 @@ export default function Test() {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  useEffect(() => {
+    function handleScroll() {
+      const scrollTop = window.scrollY;
+      const windowHeight = window.innerHeight;
+      const fullHeight = document.documentElement.scrollHeight;
+      if (scrollTop + windowHeight >= fullHeight - 200 && hasMore) {
+        setPage((prevPage) => prevPage + 1);
+      }
+    }
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [hasMore]);
 
   const fetchInitialData = async () => {
     try {
@@ -58,16 +71,10 @@ export default function Test() {
   };
 
   const fetchProducts = async (pageToFetch) => {
-    if (loadingRef.current) return;
-    if (!hasMore && pageToFetch !== 1) return;
-
-    loadingRef.current = true;
     try {
       const params = { page: pageToFetch, limit };
       if (selectedCategory) params.categories = selectedCategory;
-
       const { data } = await axios.get(`${API}/api/product/list`, { params });
-
       if (pageToFetch === 1) {
         setProducts(data.list);
       } else {
@@ -78,7 +85,6 @@ export default function Test() {
           return [...prev, ...newProducts];
         });
       }
-
       if (data.list.length < limit) {
         setHasMore(false);
       } else {
@@ -87,35 +93,16 @@ export default function Test() {
     } catch (e) {
       console.error(e);
     }
-    loadingRef.current = false;
   };
 
-  useEffect(() => {
-    setPage(1);
-    setProducts([]);
-    setHasMore(true);
-    fetchProducts(1);
-  }, [selectedCategory]);
-
-  useEffect(() => {
-    const onScroll = () => {
-      if (
-        window.innerHeight + window.scrollY >=
-          document.body.offsetHeight - 300 &&
-        hasMore &&
-        !loadingRef.current
-      ) {
-        setPage((prev) => prev + 1);
-      }
-    };
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
-  }, [hasMore]);
-
-  const getSubFor = (catId) => {
-    const cat = categoryOptions.find((c) => c._id === catId);
-    if (!cat || !cat.subCategoryId) return [];
-    return subcategories.filter((s) => cat.subCategoryId.includes(s._id));
+  const fetchFeaturedProducts = async () => {
+    try {
+      const { data } = await axios.get(`${API}/api/product/list/featured`);
+      setFeaturedProducts(data.list || []);
+    } catch (e) {
+      console.error("Erro ao buscar destaques:", e);
+      setFeaturedProducts([]);
+    }
   };
 
   return (
@@ -140,38 +127,59 @@ export default function Test() {
               </li>
             ))}
           </ol>
-          {selectedCategory && (
-            <div className="mt-3 px-2">
-              <h4 className="text-[#FFE99A] mb-1">Subcategorias:</h4>
-              <ul className="flex flex-col gap-1">
-                {getSubFor(selectedCategory).map((s) => (
-                  <li
-                    key={s._id}
-                    className="px-2 py-1 bg-[#52280f] rounded-full text-xs text-center"
-                  >
-                    {s.subCategory}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
         </div>
       </div>
 
       <div className="flex-grow md:ml-[350px]">
-        <div className="sticky top-0 flex justify-center items-center flex-col z-50">
+        <div className="sticky top-0 flex justify-center items-center flex-col z-50 bg-[#3F2305]">
           <div className="flex justify-center items-center gap-1 w-full md:hidden px-3 py-1 bg-[#361500] border-b border-[#52280f]">
             <img src={Logo} alt="Logo" className="h-14" />
             <h2 className="text-4xl font-bold text-[#FFE99A]">Reino Animal</h2>
           </div>
-          <div className="bg-red-500 h-[200px] md:h-[400px] w-full px-3 py-1 "></div>
+
+          <div className="relative w-full max-w-6xl px-3 py-6">
+            <Swiper
+              slidesPerView={"auto"}
+              spaceBetween={5}
+              freeMode={true}
+              modules={[FreeMode, Pagination, Navigation]}
+              className=""
+            >
+              {featuredProducts.map((p) => (
+                <SwiperSlide key={p._id} style={{ width: "auto" }}>
+                  <div className="bg-[#070707] flex flex-col items-center rounded overflow-hidden h-full shadow-lg w-full">
+                    <div className="flex justify-center items-center h-[200px] md:h-[300px] relative">
+                      <img
+                        src={Array.isArray(p.photos) ? p.photos[0] : p.photos}
+                        alt={p.product}
+                        className="h-full w-auto object-contain"
+                        style={{ display: "block", margin: "0 auto" }}
+                      />
+                      <div className="text-[#FFE99A] px-2 py-2 absolute bottom-0 bg-black/70 w-full">
+                        <h2 className="font-semibold line-clamp-2 md:text-base text-sm md:leading-5 leading-4">
+                          {p.product}
+                        </h2>
+                        <Link
+                          to={p.link}
+                          target="_blank"
+                          className="mt-2 inline-block bg-amber-900 text-white py-1 px-3 rounded text-sm"
+                        >
+                          R$ {p.price.toFixed(2).replace(".", ",")}
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </div>
         </div>
 
         <div className="columns-2 md:columns-5 md:gap-2 gap-1 md:px-2 md:pt-2 p-1">
           {products.map((p) => (
             <div
               key={p._id}
-              className="break-inside-avoid md:mb-2 mb-1 bg-[#070707] overflow-hidden"
+              className="break-inside-avoid md:mb-2 mb-1 bg-[#070707] overflow-hidden rounded"
             >
               <img
                 src={p.photos}
@@ -194,106 +202,6 @@ export default function Test() {
           ))}
         </div>
       </div>
-
-      <div className="fixed bottom-0 w-full bg-[#361500] border-t border-[#52280f] flex justify-around items-center py-2 z-50 md:hidden">
-        <Link
-          to="/"
-          className="flex flex-col items-center text-xs text-[#FFE99A]"
-        >
-          <FiHome size={20} />
-          Início
-        </Link>
-        <button
-          onClick={() => {
-            setShowSearch(false);
-            setShowCategories((prev) => !prev);
-          }}
-          className="flex flex-col items-center text-xs text-[#FFE99A]"
-        >
-          <FiGrid size={20} />
-          Categorias
-        </button>
-        <button
-          onClick={() => {
-            setShowCategories(false);
-            setShowSearch((prev) => !prev);
-          }}
-          className="flex flex-col items-center text-xs text-[#FFE99A]"
-        >
-          <FiSearch size={20} />
-          Buscar
-        </button>
-        <Link
-          to="/painel"
-          className="flex flex-col items-center text-xs text-[#FFE99A]"
-        >
-          <AiOutlineDashboard size={20} />
-          Painel
-        </Link>
-      </div>
-
-      <AnimatePresence>
-        {showCategories && (
-          <motion.div
-            initial={{ opacity: 0, y: "100%" }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: "100%" }}
-            className="fixed bottom-14 left-0 right-0  bg-[#3F2305] text-[#FFE99A] border-t border-[#52280f] p-4 z-40 max-h-[50vh] overflow-y-auto"
-          >
-            {!selectedCategory ? (
-              <div className="flex flex-col gap-3">
-                <ul className="flex flex-col gap-2">
-                  {categoryOptions.map((c) => (
-                    <li
-                      key={c._id}
-                      className="p-2 bg-[#52280f] rounded text-center"
-                      onClick={() => setSelectedCategory(c._id)}
-                    >
-                      {c.category}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ) : (
-              <>
-                <button
-                  className="mb-3 underline"
-                  onClick={() => setSelectedCategory(null)}
-                >
-                  Voltar às categorias
-                </button>
-                <ul className="flex flex-col gap-2 max-h-[200px] overflow-y-auto">
-                  {getSubFor(selectedCategory).map((s) => (
-                    <li
-                      key={s._id}
-                      className="p-2 bg-[#52280f] rounded text-center"
-                    >
-                      {s.subCategory}
-                    </li>
-                  ))}
-                </ul>
-              </>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {showSearch && (
-          <motion.div
-            initial={{ opacity: 0, y: "100%" }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: "100%" }}
-            className="fixed bottom-14 left-0 right-0 bg-[#3F2305] text-[#FFE99A] border-t border-[#52280f] px-4 py-6 z-40"
-          >
-            <input
-              type="text"
-              placeholder="O que você está buscando?"
-              className="w-full px-4 py-3 rounded-full bg-[#52280f] text-white placeholder-[#ffe99a88] outline-none"
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }

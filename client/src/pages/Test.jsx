@@ -2,21 +2,16 @@ import { Link } from "react-router-dom";
 import Logo from "../assets/logo.svg";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { FiHome, FiSearch, FiGrid } from "react-icons/fi";
-import { AiOutlineDashboard } from "react-icons/ai";
-import { motion, AnimatePresence } from "framer-motion";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import { Pagination, Navigation } from "swiper/modules";
+import { FreeMode, Pagination, Navigation } from "swiper/modules";
 
 export default function Test() {
   const [products, setProducts] = useState([]);
   const [categoryOptions, setCategoryOptions] = useState([]);
   const [subcategories, setSubcategories] = useState([]);
-  const [showCategories, setShowCategories] = useState(false);
-  const [showSearch, setShowSearch] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [page, setPage] = useState(1);
@@ -49,6 +44,19 @@ export default function Test() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  useEffect(() => {
+    function handleScroll() {
+      const scrollTop = window.scrollY;
+      const windowHeight = window.innerHeight;
+      const fullHeight = document.documentElement.scrollHeight;
+      if (scrollTop + windowHeight >= fullHeight - 200 && hasMore) {
+        setPage((prevPage) => prevPage + 1);
+      }
+    }
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [hasMore]);
+
   const fetchInitialData = async () => {
     try {
       const [{ data: cat }, { data: sub }] = await Promise.all([
@@ -66,9 +74,7 @@ export default function Test() {
     try {
       const params = { page: pageToFetch, limit };
       if (selectedCategory) params.categories = selectedCategory;
-
       const { data } = await axios.get(`${API}/api/product/list`, { params });
-
       if (pageToFetch === 1) {
         setProducts(data.list);
       } else {
@@ -79,7 +85,6 @@ export default function Test() {
           return [...prev, ...newProducts];
         });
       }
-
       if (data.list.length < limit) {
         setHasMore(false);
       } else {
@@ -122,27 +127,6 @@ export default function Test() {
               </li>
             ))}
           </ol>
-          {selectedCategory && (
-            <div className="mt-3 px-2">
-              <h4 className="text-[#FFE99A] mb-1">Subcategorias:</h4>
-              <ul className="flex flex-col gap-1">
-                {subcategories
-                  .filter((s) =>
-                    categoryOptions
-                      .find((c) => c._id === selectedCategory)
-                      ?.subCategoryId.includes(s._id)
-                  )
-                  .map((s) => (
-                    <li
-                      key={s._id}
-                      className="px-2 py-1 bg-[#52280f] rounded-full text-xs text-center"
-                    >
-                      {s.subCategory}
-                    </li>
-                  ))}
-              </ul>
-            </div>
-          )}
         </div>
       </div>
 
@@ -153,44 +137,36 @@ export default function Test() {
             <h2 className="text-4xl font-bold text-[#FFE99A]">Reino Animal</h2>
           </div>
 
-          <div className="relative w-full max-w-6xl px-3 py-2 bg-[#3F2305]">
+          <div className="relative w-full max-w-6xl px-3 py-6">
             <Swiper
-              slidesPerView={
-                windowWidth >= 1280
-                  ? 5
-                  : windowWidth >= 1024
-                  ? 4
-                  : windowWidth >= 768
-                  ? 3
-                  : 1.2
-              }
-              spaceBetween={20}
-              navigation={true}
-              pagination={{ clickable: true }}
-              modules={[Pagination, Navigation]}
-              className="h-[280px] md:h-[440px]"
+              slidesPerView={"auto"}
+              spaceBetween={5}
+              freeMode={true}
+              modules={[FreeMode, Pagination, Navigation]}
+              className=""
             >
               {featuredProducts.map((p) => (
-                <SwiperSlide key={p._id}>
-                  <div className="bg-[#070707] flex flex-col rounded overflow-hidden h-full shadow-lg">
-                    <div className="w-full h-[200px] md:h-[300px] flex items-center justify-center overflow-hidden">
+                <SwiperSlide key={p._id} style={{ width: "auto" }}>
+                  <div className="bg-[#070707] flex flex-col items-center rounded overflow-hidden h-full shadow-lg w-full">
+                    <div className="flex justify-center items-center h-[200px] md:h-[300px] relative">
                       <img
                         src={Array.isArray(p.photos) ? p.photos[0] : p.photos}
                         alt={p.product}
-                        className="object-contain max-h-full w-full"
+                        className="h-full w-auto object-contain"
+                        style={{ display: "block", margin: "0 auto" }}
                       />
-                    </div>
-                    <div className="p-2 text-[#FFE99A] bg-black">
-                      <h2 className="font-semibold line-clamp-2 md:text-base text-sm">
-                        {p.product}
-                      </h2>
-                      <Link
-                        to={p.link}
-                        target="_blank"
-                        className="mt-2 block bg-amber-900 text-center py-1 px-3 rounded text-white text-sm"
-                      >
-                        R$ {p.price.toFixed(2).replace(".", ",")}
-                      </Link>
+                      <div className="text-[#FFE99A] px-2 py-2 absolute bottom-0 bg-black/70 w-full">
+                        <h2 className="font-semibold line-clamp-2 md:text-base text-sm md:leading-5 leading-4">
+                          {p.product}
+                        </h2>
+                        <Link
+                          to={p.link}
+                          target="_blank"
+                          className="mt-2 inline-block bg-amber-900 text-white py-1 px-3 rounded text-sm"
+                        >
+                          R$ {p.price.toFixed(2).replace(".", ",")}
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 </SwiperSlide>
@@ -226,92 +202,6 @@ export default function Test() {
           ))}
         </div>
       </div>
-
-      <div className="fixed bottom-0 w-full bg-[#361500] border-t border-[#52280f] flex justify-around items-center py-2 z-50 md:hidden">
-        <Link
-          to="/"
-          className="flex flex-col items-center text-xs text-[#FFE99A]"
-        >
-          <FiHome size={20} />
-          Início
-        </Link>
-        <button
-          onClick={() => {
-            setShowSearch(false);
-            setShowCategories((prev) => !prev);
-          }}
-          className="flex flex-col items-center text-xs text-[#FFE99A]"
-        >
-          <FiGrid size={20} />
-          Categorias
-        </button>
-        <button
-          onClick={() => {
-            setShowCategories(false);
-            setShowSearch((prev) => !prev);
-          }}
-          className="flex flex-col items-center text-xs text-[#FFE99A]"
-        >
-          <FiSearch size={20} />
-          Buscar
-        </button>
-        <Link
-          to="/painel"
-          className="flex flex-col items-center text-xs text-[#FFE99A]"
-        >
-          <AiOutlineDashboard size={20} />
-          Painel
-        </Link>
-      </div>
-
-      <AnimatePresence>
-        {showCategories && (
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 50 }}
-            className="fixed bottom-12 left-0 right-0 bg-[#3F2305] py-4 px-4 md:hidden border-t border-[#52280f] z-50"
-          >
-            <ol className="flex gap-2 overflow-x-auto scrollbar-hide">
-              {categoryOptions.map((c) => (
-                <li
-                  key={c._id}
-                  className={`whitespace-nowrap px-3 py-1 rounded-full text-center cursor-pointer ${
-                    selectedCategory === c._id ? "bg-gray-700" : "bg-[#3F2305]"
-                  }`}
-                  onClick={() =>
-                    setSelectedCategory(
-                      selectedCategory === c._id ? null : c._id
-                    )
-                  }
-                >
-                  {c.category}
-                </li>
-              ))}
-            </ol>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {showSearch && (
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 50 }}
-            className="fixed bottom-12 left-0 right-0 bg-[#3F2305] p-4 md:hidden border-t border-[#52280f] z-50"
-          >
-            <input
-              type="text"
-              placeholder="Buscar produtos..."
-              className="w-full p-2 rounded"
-              onChange={(e) => {
-                // Implementar busca futura
-              }}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }
