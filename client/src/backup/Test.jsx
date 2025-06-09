@@ -137,11 +137,12 @@ export default function Test() {
             <h2 className="text-4xl font-bold text-[#FFE99A]">Reino Animal</h2>
           </div>
 
-          <div className="relative w-full max-w-6xl px-3 py-6">
+          <div className="relative w-full max-w-6xl bg-[#361500] md:mt-2 md:p-2 p-1">
             <Swiper
               slidesPerView={"auto"}
               spaceBetween={5}
               freeMode={true}
+              loop={true}
               modules={[FreeMode, Pagination, Navigation]}
               className=""
             >
