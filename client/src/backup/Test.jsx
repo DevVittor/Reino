@@ -1,7 +1,10 @@
 import { Link } from "react-router-dom";
 import Logo from "../assets/logo.svg";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "axios";
+import { FiHome, FiSearch, FiGrid } from "react-icons/fi";
+import { AiOutlineDashboard } from "react-icons/ai";
+import { motion, AnimatePresence } from "framer-motion";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -17,6 +20,8 @@ export default function Test() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [featuredProducts, setFeaturedProducts] = useState([]);
+  const [showCategories, setShowCategories] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
 
   const API = "https://reino-production.up.railway.app";
   const limit = windowWidth >= 768 ? 15 : 10;
@@ -154,7 +159,6 @@ export default function Test() {
                         src={Array.isArray(p.photos) ? p.photos[0] : p.photos}
                         alt={p.product}
                         className="h-full w-auto object-contain"
-                        style={{ display: "block", margin: "0 auto" }}
                       />
                       <div className="text-[#FFE99A] px-2 py-2 absolute bottom-0 bg-black/70 w-full">
                         <h2 className="font-semibold line-clamp-2 md:text-base text-sm md:leading-5 leading-4">
@@ -202,6 +206,43 @@ export default function Test() {
             </div>
           ))}
         </div>
+      </div>
+
+      <div className="fixed bottom-0 w-full bg-[#361500] border-t border-[#52280f] flex justify-around items-center py-2 z-50 md:hidden">
+        <Link
+          to="/"
+          className="flex flex-col items-center text-xs text-[#FFE99A]"
+        >
+          <FiHome size={20} />
+          Início
+        </Link>
+        <button
+          onClick={() => {
+            setShowSearch(false);
+            setShowCategories((prev) => !prev);
+          }}
+          className="flex flex-col items-center text-xs text-[#FFE99A]"
+        >
+          <FiGrid size={20} />
+          Categorias
+        </button>
+        <button
+          onClick={() => {
+            setShowCategories(false);
+            setShowSearch((prev) => !prev);
+          }}
+          className="flex flex-col items-center text-xs text-[#FFE99A]"
+        >
+          <FiSearch size={20} />
+          Buscar
+        </button>
+        <Link
+          to="/painel"
+          className="flex flex-col items-center text-xs text-[#FFE99A]"
+        >
+          <AiOutlineDashboard size={20} />
+          Painel
+        </Link>
       </div>
     </div>
   );

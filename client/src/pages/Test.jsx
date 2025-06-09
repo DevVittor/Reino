@@ -112,17 +112,27 @@ export default function Test() {
 
   return (
     <div className="flex flex-col md:flex-row bg-[#3F2305] min-h-screen pb-14 md:pb-0">
-      <div className="hidden md:flex fixed left-0 top-0 w-[350px] h-full bg-[#361500] border-r-2 border-[#52280f] p-5 flex-col justify-between">
-        <div className="w-full flex justify-center mb-6">
-          <img src={Logo} alt="Logo" className="h-16" />
+      
+      <div className="hidden md:flex fixed left-0 top-0 w-[350px] h-full bg-gradient-to-b from-[#3F2305] to-[#1F1100]  p-6 flex-col gap-6 shadow-xl">
+        <div className="flex flex-col items-center text-center">
+          <img src={Logo} alt="Logo" className="h-16 mb-2" />
+          <h1 className="text-[#FFE99A] text-3xl font-extrabold tracking-widest uppercase">
+            Reino Animal
+          </h1>
+          <p className="text-[#ffe99a88] text-sm mt-1">
+            Selecione uma categoria abaixo
+          </p>
         </div>
-        <div className="flex-1 overflow-y-auto pr-1">
-          <ol className="flex flex-col gap-2">
+
+        <div className="flex-1 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-[#52280f] scrollbar-track-transparent max-h-[calc(100vh-150px)]">
+          <ol className="flex flex-col gap-3">
             {categoryOptions.map((c) => (
               <li
                 key={c._id}
-                className={`px-3 py-1 rounded-full text-center cursor-pointer ${
-                  selectedCategory === c._id ? "bg-gray-700" : "bg-[#3F2305]"
+                className={`transition-all duration-200 cursor-pointer px-4 py-2 rounded-full text-center text-sm font-semibold shadow-md hover:bg-[#52280f] hover:text-[#FFE99A] ${
+                  selectedCategory === c._id
+                    ? "bg-[#FFE99A] text-[#361500]"
+                    : "bg-[#3F2305] text-[#FFE99A]"
                 }`}
                 onClick={() =>
                   setSelectedCategory(selectedCategory === c._id ? null : c._id)
@@ -132,7 +142,48 @@ export default function Test() {
               </li>
             ))}
           </ol>
+
+          {selectedCategory && (
+            <div className="mt-6">
+              <h4 className="text-[#FFE99A] text-lg font-bold border-b border-[#FFE99A] pb-1 mb-2">
+                Subcategorias
+              </h4>
+              <ul className="flex flex-col gap-2 max-h-[300px] overflow-y-auto scrollbar-thin scrollbar-thumb-[#52280f] scrollbar-track-transparent pr-1">
+                {subcategories
+                  .filter((s) =>
+                    categoryOptions
+                      .find((c) => c._id === selectedCategory)
+                      ?.subCategoryId.includes(s._id)
+                  )
+                  .map((s) => (
+                    <li
+                      key={s._id}
+                      className="bg-[#52280f] text-[#FFE99A] px-3 py-1 rounded-full text-sm text-center shadow-sm hover:bg-[#FFE99A] hover:text-[#361500] cursor-default"
+                    >
+                      {s.subCategory}
+                    </li>
+                  ))}
+              </ul>
+            </div>
+          )}
         </div>
+
+        <Link
+          to="/painel"
+          className="bg-amber-950 flex gap-3 justify-center items-center p-3 rounded-xl"
+        >
+          <div className="">
+            <img
+              className="rounded-full object-cover h-14 w-14 border-2 border-amber-800"
+              src="https://images.pexels.com/photos/39866/entrepreneur-startup-start-up-man-39866.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+              alt=""
+            />
+          </div>
+          <div className="flex flex-col">
+            <h3 className="text-[#FFE99A] font-medium">Painel de Controle</h3>
+            <span className="font-light text-[#FFE99A] text-xs">Acessar</span>
+          </div>
+        </Link>
       </div>
 
       <div className="flex-grow md:ml-[350px]">
