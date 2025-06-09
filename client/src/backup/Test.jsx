@@ -128,17 +128,15 @@ export default function Test() {
               Reino Animal
             </h1>
           </Link>
-          <p className="text-[#ffe99a88] text-sm mt-1">
-            Selecione uma categoria abaixo
-          </p>
           <input
             type="search"
             placeholder="Buscar produto..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="mt-4 w-full p-2 rounded bg-[#1F1100] text-[#FFE99A] placeholder-[#ffe99a88] border border-[#52280f] text-sm"
+            className="mt-4 w-full p-2 rounded bg-[#1F1100] text-[#FFE99A] placeholder-[#ffe99a88] border border-[#52280f] text-sm focus:outline-none focus:ring-2 focus:ring-amber-800"
           />
         </div>
+
         <div className="flex-1 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-[#52280f] scrollbar-track-transparent max-h-[calc(100vh-150px)]">
           <ol className="flex flex-col gap-3 mt-4">
             {categoryOptions.map((c) => (
@@ -181,13 +179,14 @@ export default function Test() {
             </div>
           )}
         </div>
+
         <Link
           to="/painel"
-          className="bg-amber-950 flex gap-3 justify-center items-center p-3 rounded-xl"
+          className="bg-amber-950 hover:bg-amber-900 transition-colors ease-in-out duration-300 flex gap-3 justify-center items-center p-3 rounded-xl"
         >
           <div>
             <img
-              className="rounded-full object-cover h-14 w-14 border-2 border-amber-800"
+              className="rounded-full object-cover h-12 w-12 border-2 border-amber-800"
               src="https://images.pexels.com/photos/39866/entrepreneur-startup-start-up-man-39866.jpeg"
               alt=""
             />
@@ -240,29 +239,9 @@ export default function Test() {
               ))}
             </Swiper>
           </div>
-          {showCategories && (
-            <div className="w-full overflow-x-auto bg-[#1F1100] border-y border-[#52280f] py-2 px-2 whitespace-nowrap max-h-[60px] scrollbar-thin scrollbar-thumb-[#52280f] scrollbar-track-transparent">
-              {categoryOptions.map((c) => (
-                <button
-                  key={c._id}
-                  onClick={() =>
-                    setSelectedCategory(
-                      selectedCategory === c._id ? null : c._id
-                    )
-                  }
-                  className={`inline-block text-sm font-medium px-4 py-1 rounded-full mx-1 shadow-md ${
-                    selectedCategory === c._id
-                      ? "bg-[#FFE99A] text-[#361500]"
-                      : "bg-[#3F2305] text-[#FFE99A]"
-                  }`}
-                >
-                  {c.category}
-                </button>
-              ))}
-            </div>
-          )}
+
           {showSearch && (
-            <div className="w-full max-w-6xl mx-auto p-2">
+            <div className="w-full max-w-6xl mx-auto p-2 md:hidden">
               <input
                 type="text"
                 placeholder="Buscar produto..."
