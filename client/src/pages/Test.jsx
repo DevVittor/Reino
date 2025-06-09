@@ -2,7 +2,8 @@ import { Link } from "react-router-dom";
 import Logo from "../assets/logo.svg";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { FiHome, FiSearch, FiUser, FiGrid } from "react-icons/fi";
+import { FiHome, FiSearch, FiGrid } from "react-icons/fi";
+import { AiOutlineDashboard } from "react-icons/ai";
 import { motion, AnimatePresence } from "framer-motion";
 import { IoClose } from "react-icons/io5";
 
@@ -147,11 +148,11 @@ export default function Test() {
           Buscar
         </button>
         <Link
-          to="/perfil"
+          to="/painel"
           className="flex flex-col items-center text-xs text-[#FFE99A]"
         >
-          <FiUser size={20} />
-          Perfil
+          <AiOutlineDashboard size={20} />
+          Painel
         </Link>
       </div>
 
