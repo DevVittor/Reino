@@ -16,21 +16,12 @@ export default function Test() {
   const [subcategories, setSubcategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [showCategories, setShowCategories] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
   const API = "https://reino-production.up.railway.app";
-  const limit = windowWidth >= 768 ? 15 : 10;
-
-  useEffect(() => {
-    setPage(1);
-    setProducts([]);
-    setHasMore(true);
-  }, [windowWidth]);
 
   useEffect(() => {
     fetchInitialData();
@@ -38,16 +29,8 @@ export default function Test() {
   }, []);
 
   useEffect(() => {
-    if (page === 1) {
-      fetchProducts(1);
-    }
-  }, [windowWidth, selectedCategory]);
-
-  useEffect(() => {
-    if (page > 1) {
-      fetchProducts(page);
-    }
-  }, [page]);
+    fetchProducts();
+  }, [selectedCategory]);
 
   useEffect(() => {
     function handleResize() {
@@ -56,19 +39,6 @@ export default function Test() {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-
-  useEffect(() => {
-    function handleScroll() {
-      const scrollTop = window.scrollY;
-      const windowHeight = window.innerHeight;
-      const fullHeight = document.documentElement.scrollHeight;
-      if (scrollTop + windowHeight >= fullHeight - 200 && hasMore) {
-        setPage((prevPage) => prevPage + 1);
-      }
-    }
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [hasMore]);
 
   const fetchInitialData = async () => {
     try {
@@ -83,26 +53,12 @@ export default function Test() {
     }
   };
 
-  const fetchProducts = async (pageToFetch) => {
+  const fetchProducts = async () => {
     try {
-      const params = { page: pageToFetch, limit };
+      const params = {};
       if (selectedCategory) params.categories = selectedCategory;
       const { data } = await axios.get(`${API}/api/product/list`, { params });
-      if (pageToFetch === 1) {
-        setProducts(data.list);
-      } else {
-        setProducts((prev) => {
-          const newProducts = data.list.filter(
-            (newP) => !prev.some((oldP) => oldP._id === newP._id)
-          );
-          return [...prev, ...newProducts];
-        });
-      }
-      if (data.list.length < limit) {
-        setHasMore(false);
-      } else {
-        setHasMore(true);
-      }
+      setProducts(data.list || []);
     } catch (e) {
       console.error(e);
     }

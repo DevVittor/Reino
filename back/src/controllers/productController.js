@@ -51,6 +51,55 @@ export const allProducts = async (req, res) => {
 
 export const listProducts = async (req, res) => {
   try {
+    const { search, store, categories, subcategories } = req.query;
+
+    const filter = { blocked: false };
+
+    if (search) filter.product = { $regex: search, $options: "i" };
+    if (store) filter.store = store;
+
+    if (categories) {
+      const categoryArray = Array.isArray(categories)
+        ? categories
+        : categories.split(",").filter(Boolean);
+      if (categoryArray.length > 0) {
+        filter.categoryId = { $in: categoryArray };
+      }
+    }
+
+    if (subcategories) {
+      const subcategoryArray = Array.isArray(subcategories)
+        ? subcategories
+        : subcategories.split(",").filter(Boolean);
+      if (subcategoryArray.length > 0) {
+        filter.subCategoryId = { $in: subcategoryArray };
+      }
+    }
+
+    const products = await productModel
+      .find(filter)
+      .populate("categoryId", "category")
+      .populate("subCategoryId", "subCategory")
+      .lean();
+
+    return res.status(200).json({
+      msg:
+        products.length > 0
+          ? "Produtos encontrados"
+          : "Nenhum produto encontrado com os filtros aplicados",
+      list: products,
+    });
+  } catch (error) {
+    console.error(`❌ Erro ao listar produtos: ${error.message}`);
+    return res.status(500).json({
+      error: "Erro interno ao buscar produtos",
+      details: error.message,
+    });
+  }
+};
+
+/*export const listProducts = async (req, res) => {
+  try {
     const {
       search,
       store,
@@ -113,7 +162,7 @@ export const listProducts = async (req, res) => {
       details: error.message,
     });
   }
-};
+};*/
 
 export const myProductsUnlocks = async (req, res) => {
   const products = await productModel.find({ blocked: false });
