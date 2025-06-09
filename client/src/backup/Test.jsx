@@ -1,15 +1,10 @@
 import { Link } from "react-router-dom";
 import Logo from "../assets/logo.svg";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { FiHome, FiSearch, FiGrid } from "react-icons/fi";
 import { AiOutlineDashboard } from "react-icons/ai";
 import { motion, AnimatePresence } from "framer-motion";
-import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
-import { Pagination, Navigation } from "swiper/modules";
 
 export default function Test() {
   const [products, setProducts] = useState([]);
@@ -21,9 +16,10 @@ export default function Test() {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const [featuredProducts, setFeaturedProducts] = useState([]);
+  const loadingRef = useRef(false);
 
   const API = "https://reino-production.up.railway.app";
+
   const limit = windowWidth >= 768 ? 15 : 10;
 
   useEffect(() => {
@@ -34,12 +30,11 @@ export default function Test() {
 
   useEffect(() => {
     fetchInitialData();
-    fetchFeaturedProducts();
   }, []);
 
   useEffect(() => {
     fetchProducts(page);
-  }, [page, windowWidth, selectedCategory]);
+  }, [page, windowWidth]);
 
   useEffect(() => {
     function handleResize() {
@@ -63,6 +58,10 @@ export default function Test() {
   };
 
   const fetchProducts = async (pageToFetch) => {
+    if (loadingRef.current) return;
+    if (!hasMore && pageToFetch !== 1) return;
+
+    loadingRef.current = true;
     try {
       const params = { page: pageToFetch, limit };
       if (selectedCategory) params.categories = selectedCategory;
@@ -88,16 +87,35 @@ export default function Test() {
     } catch (e) {
       console.error(e);
     }
+    loadingRef.current = false;
   };
 
-  const fetchFeaturedProducts = async () => {
-    try {
-      const { data } = await axios.get(`${API}/api/product/list/featured`);
-      setFeaturedProducts(data.list || []);
-    } catch (e) {
-      console.error("Erro ao buscar destaques:", e);
-      setFeaturedProducts([]);
-    }
+  useEffect(() => {
+    setPage(1);
+    setProducts([]);
+    setHasMore(true);
+    fetchProducts(1);
+  }, [selectedCategory]);
+
+  useEffect(() => {
+    const onScroll = () => {
+      if (
+        window.innerHeight + window.scrollY >=
+          document.body.offsetHeight - 300 &&
+        hasMore &&
+        !loadingRef.current
+      ) {
+        setPage((prev) => prev + 1);
+      }
+    };
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [hasMore]);
+
+  const getSubFor = (catId) => {
+    const cat = categoryOptions.find((c) => c._id === catId);
+    if (!cat || !cat.subCategoryId) return [];
+    return subcategories.filter((s) => cat.subCategoryId.includes(s._id));
   };
 
   return (
@@ -126,20 +144,14 @@ export default function Test() {
             <div className="mt-3 px-2">
               <h4 className="text-[#FFE99A] mb-1">Subcategorias:</h4>
               <ul className="flex flex-col gap-1">
-                {subcategories
-                  .filter((s) =>
-                    categoryOptions
-                      .find((c) => c._id === selectedCategory)
-                      ?.subCategoryId.includes(s._id)
-                  )
-                  .map((s) => (
-                    <li
-                      key={s._id}
-                      className="px-2 py-1 bg-[#52280f] rounded-full text-xs text-center"
-                    >
-                      {s.subCategory}
-                    </li>
-                  ))}
+                {getSubFor(selectedCategory).map((s) => (
+                  <li
+                    key={s._id}
+                    className="px-2 py-1 bg-[#52280f] rounded-full text-xs text-center"
+                  >
+                    {s.subCategory}
+                  </li>
+                ))}
               </ul>
             </div>
           )}
@@ -147,63 +159,19 @@ export default function Test() {
       </div>
 
       <div className="flex-grow md:ml-[350px]">
-        <div className="sticky top-0 flex justify-center items-center flex-col z-50 bg-[#3F2305]">
+        <div className="sticky top-0 flex justify-center items-center flex-col z-50">
           <div className="flex justify-center items-center gap-1 w-full md:hidden px-3 py-1 bg-[#361500] border-b border-[#52280f]">
             <img src={Logo} alt="Logo" className="h-14" />
             <h2 className="text-4xl font-bold text-[#FFE99A]">Reino Animal</h2>
           </div>
-
-          <div className="relative w-full max-w-6xl px-3 py-2 bg-[#3F2305]">
-            <Swiper
-              slidesPerView={
-                windowWidth >= 1280
-                  ? 5
-                  : windowWidth >= 1024
-                  ? 4
-                  : windowWidth >= 768
-                  ? 3
-                  : 1.2
-              }
-              spaceBetween={20}
-              navigation={true}
-              pagination={{ clickable: true }}
-              modules={[Pagination, Navigation]}
-              className="h-[280px] md:h-[440px]"
-            >
-              {featuredProducts.map((p) => (
-                <SwiperSlide key={p._id}>
-                  <div className="bg-[#070707] flex flex-col rounded overflow-hidden h-full shadow-lg">
-                    <div className="w-full h-[200px] md:h-[300px] flex items-center justify-center overflow-hidden">
-                      <img
-                        src={Array.isArray(p.photos) ? p.photos[0] : p.photos}
-                        alt={p.product}
-                        className="object-contain max-h-full w-full"
-                      />
-                    </div>
-                    <div className="p-2 text-[#FFE99A] bg-black">
-                      <h2 className="font-semibold line-clamp-2 md:text-base text-sm">
-                        {p.product}
-                      </h2>
-                      <Link
-                        to={p.link}
-                        target="_blank"
-                        className="mt-2 block bg-amber-900 text-center py-1 px-3 rounded text-white text-sm"
-                      >
-                        R$ {p.price.toFixed(2).replace(".", ",")}
-                      </Link>
-                    </div>
-                  </div>
-                </SwiperSlide>
-              ))}
-            </Swiper>
-          </div>
+          <div className="bg-red-500 h-[200px] md:h-[400px] w-full px-3 py-1 "></div>
         </div>
 
         <div className="columns-2 md:columns-5 md:gap-2 gap-1 md:px-2 md:pt-2 p-1">
           {products.map((p) => (
             <div
               key={p._id}
-              className="break-inside-avoid md:mb-2 mb-1 bg-[#070707] overflow-hidden rounded"
+              className="break-inside-avoid md:mb-2 mb-1 bg-[#070707] overflow-hidden"
             >
               <img
                 src={p.photos}
@@ -267,28 +235,45 @@ export default function Test() {
       <AnimatePresence>
         {showCategories && (
           <motion.div
-            initial={{ opacity: 0, y: 50 }}
+            initial={{ opacity: 0, y: "100%" }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 50 }}
-            className="fixed bottom-12 left-0 right-0 bg-[#3F2305] py-4 px-4 md:hidden border-t border-[#52280f] z-50"
+            exit={{ opacity: 0, y: "100%" }}
+            className="fixed bottom-14 left-0 right-0  bg-[#3F2305] text-[#FFE99A] border-t border-[#52280f] p-4 z-40 max-h-[50vh] overflow-y-auto"
           >
-            <ol className="flex gap-2 overflow-x-auto scrollbar-hide">
-              {categoryOptions.map((c) => (
-                <li
-                  key={c._id}
-                  className={`whitespace-nowrap px-3 py-1 rounded-full text-center cursor-pointer ${
-                    selectedCategory === c._id ? "bg-gray-700" : "bg-[#3F2305]"
-                  }`}
-                  onClick={() =>
-                    setSelectedCategory(
-                      selectedCategory === c._id ? null : c._id
-                    )
-                  }
+            {!selectedCategory ? (
+              <div className="flex flex-col gap-3">
+                <ul className="flex flex-col gap-2">
+                  {categoryOptions.map((c) => (
+                    <li
+                      key={c._id}
+                      className="p-2 bg-[#52280f] rounded text-center"
+                      onClick={() => setSelectedCategory(c._id)}
+                    >
+                      {c.category}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <>
+                <button
+                  className="mb-3 underline"
+                  onClick={() => setSelectedCategory(null)}
                 >
-                  {c.category}
-                </li>
-              ))}
-            </ol>
+                  Voltar às categorias
+                </button>
+                <ul className="flex flex-col gap-2 max-h-[200px] overflow-y-auto">
+                  {getSubFor(selectedCategory).map((s) => (
+                    <li
+                      key={s._id}
+                      className="p-2 bg-[#52280f] rounded text-center"
+                    >
+                      {s.subCategory}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
@@ -296,18 +281,15 @@ export default function Test() {
       <AnimatePresence>
         {showSearch && (
           <motion.div
-            initial={{ opacity: 0, y: 50 }}
+            initial={{ opacity: 0, y: "100%" }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 50 }}
-            className="fixed bottom-12 left-0 right-0 bg-[#3F2305] p-4 md:hidden border-t border-[#52280f] z-50"
+            exit={{ opacity: 0, y: "100%" }}
+            className="fixed bottom-14 left-0 right-0 bg-[#3F2305] text-[#FFE99A] border-t border-[#52280f] px-4 py-6 z-40"
           >
             <input
               type="text"
-              placeholder="Buscar produtos..."
-              className="w-full p-2 rounded"
-              onChange={(e) => {
-                // Implementar busca futura
-              }}
+              placeholder="O que você está buscando?"
+              className="w-full px-4 py-3 rounded-full bg-[#52280f] text-white placeholder-[#ffe99a88] outline-none"
             />
           </motion.div>
         )}
