@@ -51,22 +51,20 @@ export const allProducts = async (req, res) => {
 
 export const listProducts = async (req, res) => {
   try {
-    const { search, store, categories, subcategories } = req.query;
+    const {
+      search,
+      store,
+      categories,
+      subcategories,
+      page = 1,
+      limit = 20,
+    } = req.query;
 
-    // Filtro inicial: produtos não bloqueados
     const filter = { blocked: false };
 
-    // Filtro por nome do produto (busca textual, case insensitive)
-    if (search) {
-      filter.product = { $regex: search, $options: "i" };
-    }
+    if (search) filter.product = { $regex: search, $options: "i" };
+    if (store) filter.store = store;
 
-    // Filtro por loja
-    if (store) {
-      filter.store = store;
-    }
-
-    // Filtro por categoria (pode ser array ou string separada por vírgula)
     if (categories) {
       const categoryArray = Array.isArray(categories)
         ? categories
@@ -76,7 +74,6 @@ export const listProducts = async (req, res) => {
       }
     }
 
-    // Filtro por subcategoria
     if (subcategories) {
       const subcategoryArray = Array.isArray(subcategories)
         ? subcategories
@@ -86,19 +83,22 @@ export const listProducts = async (req, res) => {
       }
     }
 
-    // Log do filtro atual em modo dev (útil para depurar)
     if (process.env.NODE_ENV !== "production") {
       console.log("🔍 Filtro aplicado:", JSON.stringify(filter, null, 2));
     }
 
-    // Busca no banco com populates
+    const pageNumber = parseInt(page, 10);
+    const limitNumber = parseInt(limit, 10);
+    const skip = (pageNumber - 1) * limitNumber;
+
     const products = await productModel
       .find(filter)
       .populate("categoryId", "category")
       .populate("subCategoryId", "subCategory")
-      .lean(); // opcional: melhora performance se você não precisa de métodos mongoose
+      .skip(skip)
+      .limit(limitNumber)
+      .lean();
 
-    // Retorno
     return res.status(200).json({
       msg:
         products.length > 0
