@@ -3,8 +3,7 @@ import Logo from "../assets/logo.svg";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { FiHome, FiSearch, FiGrid } from "react-icons/fi";
-import { AiOutlineDashboard } from "react-icons/ai";
-import { FaCircleUser } from "react-icons/fa6";
+import { FaTachometerAlt } from "react-icons/fa";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -198,7 +197,7 @@ export default function Test() {
             className="w-fit bg-amber-950 hover:bg-amber-900 transition-colors ease-in-out duration-300 flex gap-3 justify-center items-center p-3 rounded-xl"
           >
             <div>
-              <FaCircleUser className="text-3xl text-[#FFE99A]" />
+              <FaTachometerAlt className="text-3xl text-[#FFE99A]" />
             </div>
             <div className="flex flex-col">
               <h3 className="text-[#FFE99A] font-medium">Painel de Controle</h3>
@@ -381,7 +380,7 @@ export default function Test() {
           to="/painel"
           className="flex flex-col items-center text-xs text-[#FFE99A]"
         >
-          <AiOutlineDashboard size={20} />
+          <FaTachometerAlt size={20} />
           Painel
         </Link>
       </div>
