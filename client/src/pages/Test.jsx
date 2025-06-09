@@ -299,17 +299,25 @@ export default function Test() {
             )}
           </AnimatePresence>
 
-          {showSearch && (
-            <div className="w-full max-w-6xl mx-auto p-2 md:hidden">
-              <input
-                type="text"
-                placeholder="Buscar produto..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full p-2 rounded bg-[#1F1100] text-[#FFE99A] placeholder-[#ffe99a88] border border-[#52280f]"
-              />
-            </div>
-          )}
+          <AnimatePresence>
+            {showSearch && (
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+                className="w-full max-w-6xl mx-auto p-2 md:hidden"
+              >
+                <input
+                  type="text"
+                  placeholder="Buscar produto..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full p-2 rounded bg-[#1F1100] text-[#FFE99A] placeholder-[#ffe99a88] border border-[#52280f]"
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         <div className="lg:columns-5 md:columns-4 sm:columns-3 columns-2 md:gap-2 gap-1 md:px-2 md:pt-2 p-1">
