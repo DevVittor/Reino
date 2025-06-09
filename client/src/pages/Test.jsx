@@ -150,8 +150,9 @@ export default function Test() {
           <ol className="flex flex-col gap-3 mt-4">
             {categoryOptions.map((c) => (
               <li
+                title={c.category}
                 key={c._id}
-                className={`transition-all duration-200 cursor-pointer px-4 py-2 rounded-full text-center text-sm font-semibold shadow-md hover:bg-[#52280f] hover:text-[#FFE99A] ${
+                className={`transition-all duration-200 cursor-pointer truncate px-4 py-2 rounded-full text-center text-sm font-semibold shadow-md hover:bg-[#52280f] hover:text-[#FFE99A] ${
                   selectedCategory === c._id
                     ? "bg-[#FFE99A] text-[#361500]"
                     : "bg-[#3F2305] text-[#FFE99A]"
@@ -179,7 +180,8 @@ export default function Test() {
                   .map((s) => (
                     <li
                       key={s._id}
-                      className="bg-[#52280f] text-[#FFE99A] px-3 py-1 rounded-full text-sm text-center shadow-sm hover:bg-[#FFE99A] hover:text-[#361500] cursor-default"
+                      className="bg-[#52280f] truncate text-[#FFE99A] px-3 py-1 rounded-full text-sm text-center shadow-sm hover:bg-[#FFE99A] hover:text-[#361500] cursor-default"
+                      title={s.subCategory}
                     >
                       {s.subCategory}
                     </li>
@@ -229,15 +231,19 @@ export default function Test() {
                         src={Array.isArray(p.photos) ? p.photos[0] : p.photos}
                         alt={p.product}
                         className="h-full w-auto object-contain"
+                        title={p.product}
                       />
                       <div className="text-[#FFE99A] px-2 py-2 absolute bottom-0 bg-black/70 w-full">
-                        <h2 className="font-semibold line-clamp-2 md:text-base text-sm md:leading-5 leading-4">
+                        <h2
+                          className="font-semibold line-clamp-2 md:text-base text-sm md:leading-5 leading-4"
+                          title={p.product}
+                        >
                           {p.product}
                         </h2>
                         <Link
                           to={p.link}
                           target="_blank"
-                          className="mt-2 inline-block bg-amber-900 text-white py-1 px-3 rounded text-sm"
+                          className="mt-2 inline-block bg-amber-900 hover:bg-amber-800 transition-colors ease-in-out duration-300 py-1 px-3 rounded text-sm"
                         >
                           R$ {p.price.toFixed(2).replace(".", ",")}
                         </Link>
@@ -308,7 +314,7 @@ export default function Test() {
           )}
         </div>
 
-        <div className="columns-2 md:columns-5 md:gap-2 gap-1 md:px-2 md:pt-2 p-1">
+        <div className="lg:columns-5 md:columns-4 sm:columns-3 columns-2 md:gap-2 gap-1 md:px-2 md:pt-2 p-1">
           {products
             .filter((p) =>
               p.product.toLowerCase().includes(searchTerm.toLowerCase())
@@ -322,15 +328,19 @@ export default function Test() {
                   src={p.photos}
                   alt={p.product}
                   className="w-full object-cover"
+                  title={p.product}
                 />
                 <div className="p-2 text-[#FFE99A]">
-                  <h2 className="font-semibold line-clamp-2 md:leading-5 leading-4 md:text-base text-sm">
+                  <h2
+                    className="font-semibold line-clamp-2 md:leading-5 leading-4 md:text-base text-sm"
+                    title={p.product}
+                  >
                     {p.product}
                   </h2>
                   <Link
                     to={p.link}
                     target="_blank"
-                    className="mt-2 block bg-amber-900 text-center py-1 px-3"
+                    className="mt-2 block bg-amber-900 text-center py-1 px-3 font-medium"
                   >
                     R$ {p.price.toFixed(2).replace(".", ",")}
                   </Link>
