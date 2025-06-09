@@ -96,7 +96,7 @@ export default function Test() {
                 className="w-full object-cover"
               />
               <div className="p-2 text-[#FFE99A]">
-                <h2 className="font-semibold line-clamp-2">{p.product}</h2>
+                <h2 className="font-semibold line-clamp-2 md:leading-5 leading-4">{p.product}</h2>
                 <Link
                   to={p.link}
                   target="_blank"
