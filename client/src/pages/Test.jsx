@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { FiHome, FiSearch, FiUser, FiGrid } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
+import { IoClose } from "react-icons/io5";
 
 export default function Test() {
   const [products, setProducts] = useState([]);
@@ -80,10 +81,10 @@ export default function Test() {
         </div>
       </div>
 
-      <div className="flex-grow md:ml-[350px] p-4">
-        <div className="sticky top-0 bg-red-500 h-[250px] md:h-[400px] mb-4"></div>
+      <div className="flex-grow md:ml-[350px]">
+        <div className="sticky top-0 bg-red-500 h-[250px] md:h-[400px]"></div>
 
-        <div className="columns-2 md:columns-5 gap-2">
+        <div className="columns-2 md:columns-5 md:gap-2 gap-1 md:px-2 md:pt-2 p-1">
           {products.map((p) => (
             <div
               key={p._id}
@@ -154,18 +155,23 @@ export default function Test() {
             exit={{ opacity: 0, y: "100%" }}
             className="fixed bottom-14 left-0 right-0 bg-[#3F2305] text-[#FFE99A] border-t border-[#52280f] p-4 z-40 max-h-[50vh] overflow-y-auto"
           >
+            <div className="mb-4">
+              <IoClose className="text-2xl" />
+            </div>
             {!selectedCategory ? (
-              <ul className="flex flex-col gap-2">
-                {categoryOptions.map((c) => (
-                  <li
-                    key={c._id}
-                    className="p-2 bg-[#52280f] rounded text-center"
-                    onClick={() => setSelectedCategory(c._id)}
-                  >
-                    {c.category}
-                  </li>
-                ))}
-              </ul>
+              <div className="flex flex-col gap-3">
+                <ul className="flex flex-col gap-2">
+                  {categoryOptions.map((c) => (
+                    <li
+                      key={c._id}
+                      className="p-2 bg-[#52280f] rounded text-center"
+                      onClick={() => setSelectedCategory(c._id)}
+                    >
+                      {c.category}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             ) : (
               <>
                 <button
