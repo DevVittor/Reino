@@ -119,108 +119,107 @@ export default function Test() {
         </div>
       </div>
 
-      <div className="fixed bottom-0 w-full bg-[#361500] border-t border-[#52280f] flex justify-around items-center py-2 z-50 md:hidden">
-        <Link
-          to="/"
-          className="flex flex-col items-center text-xs text-[#FFE99A]"
-        >
-          <FiHome size={20} />
-          Início
-        </Link>
-        <button
-          onClick={() => {
-            setShowSearch(false);
-            setShowCategories((prev) => !prev);
-          }}
-          className="flex flex-col items-center text-xs text-[#FFE99A]"
-        >
-          <FiGrid size={20} />
-          Categorias
-        </button>
-        <button
-          onClick={() => {
-            setShowCategories(false);
-            setShowSearch((prev) => !prev);
-          }}
-          className="flex flex-col items-center text-xs text-[#FFE99A]"
-        >
-          <FiSearch size={20} />
-          Buscar
-        </button>
-        <Link
-          to="/painel"
-          className="flex flex-col items-center text-xs text-[#FFE99A]"
-        >
-          <AiOutlineDashboard size={20} />
-          Painel
-        </Link>
+      <div className="flex flex-col">
+        <div className="fixed bottom-0 w-full bg-[#361500] border-t border-[#52280f] flex justify-around items-center py-2 z-50 md:hidden">
+          <Link
+            to="/"
+            className="flex flex-col items-center text-xs text-[#FFE99A]"
+          >
+            <FiHome size={20} />
+            Início
+          </Link>
+          <button
+            onClick={() => {
+              setShowSearch(false);
+              setShowCategories((prev) => !prev);
+            }}
+            className="flex flex-col items-center text-xs text-[#FFE99A]"
+          >
+            <FiGrid size={20} />
+            Categorias
+          </button>
+          <button
+            onClick={() => {
+              setShowCategories(false);
+              setShowSearch((prev) => !prev);
+            }}
+            className="flex flex-col items-center text-xs text-[#FFE99A]"
+          >
+            <FiSearch size={20} />
+            Buscar
+          </button>
+          <Link
+            to="/painel"
+            className="flex flex-col items-center text-xs text-[#FFE99A]"
+          >
+            <AiOutlineDashboard size={20} />
+            Painel
+          </Link>
+        </div>
+
+        <AnimatePresence>
+          {showCategories && (
+            <motion.div
+              initial={{ opacity: 0, y: "100%" }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: "100%" }}
+              className="bg-[#3F2305] text-[#FFE99A] border-t border-[#52280f] p-4 z-40 max-h-[50vh] overflow-y-auto"
+            >
+              {!selectedCategory ? (
+                <div className="flex flex-col gap-3">
+                  <ul className="flex flex-col gap-2">
+                    {categoryOptions.map((c) => (
+                      <li
+                        key={c._id}
+                        className="p-2 bg-[#52280f] rounded text-center"
+                        onClick={() => setSelectedCategory(c._id)}
+                      >
+                        {c.category}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : (
+                <>
+                  <button
+                    className="mb-3 underline"
+                    onClick={() => setSelectedCategory(null)}
+                  >
+                    Voltar às categorias
+                  </button>
+                  <ul className="flex flex-col gap-2 max-h-[200px] overflow-y-auto">
+                    {getSubFor(selectedCategory).map((s) => (
+                      <li
+                        key={s._id}
+                        className="p-2 bg-[#52280f] rounded text-center"
+                      >
+                        {s.subCategory}
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {showSearch && (
+            <motion.div
+              initial={{ opacity: 0, y: "100%" }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: "100%" }}
+              className="bg-[#3F2305] text-[#FFE99A] border-t border-[#52280f] px-4 py-6 z-40"
+            >
+              <input
+                type="text"
+                placeholder="O que você está buscando?"
+                className="w-full px-4 py-3 rounded-full bg-[#52280f] text-white placeholder-[#ffe99a88] outline-none"
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
-
-      <AnimatePresence>
-        {showCategories && (
-          <motion.div
-            initial={{ opacity: 0, y: "100%" }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: "100%" }}
-            className="fixed bottom-14 left-0 right-0 bg-[#3F2305] text-[#FFE99A] border-t border-[#52280f] p-4 z-40 max-h-[50vh] overflow-y-auto"
-          >
-            <div className="mb-4">
-              <IoClose className="text-2xl" />
-            </div>
-            {!selectedCategory ? (
-              <div className="flex flex-col gap-3">
-                <ul className="flex flex-col gap-2">
-                  {categoryOptions.map((c) => (
-                    <li
-                      key={c._id}
-                      className="p-2 bg-[#52280f] rounded text-center"
-                      onClick={() => setSelectedCategory(c._id)}
-                    >
-                      {c.category}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ) : (
-              <>
-                <button
-                  className="mb-3 underline"
-                  onClick={() => setSelectedCategory(null)}
-                >
-                  Voltar às categorias
-                </button>
-                <ul className="flex flex-col gap-2 max-h-[200px] overflow-y-auto">
-                  {getSubFor(selectedCategory).map((s) => (
-                    <li
-                      key={s._id}
-                      className="p-2 bg-[#52280f] rounded text-center"
-                    >
-                      {s.subCategory}
-                    </li>
-                  ))}
-                </ul>
-              </>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {showSearch && (
-          <motion.div
-            initial={{ opacity: 0, y: "100%" }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: "100%" }}
-            className="fixed bottom-14 left-0 right-0 bg-[#3F2305] text-[#FFE99A] border-t border-[#52280f] px-4 py-6 z-40"
-          >
-            <input
-              type="text"
-              placeholder="O que você está buscando?"
-              className="w-full px-4 py-3 rounded-full bg-[#52280f] text-white placeholder-[#ffe99a88] outline-none"
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }
