@@ -88,7 +88,7 @@ export default function Test() {
           {products.map((p) => (
             <div
               key={p._id}
-              className="break-inside-avoid mb-2 bg-[#070707] rounded-lg overflow-hidden"
+              className="break-inside-avoid mb-2 bg-[#070707] overflow-hidden"
             >
               <img
                 src={p.photos}
@@ -100,7 +100,7 @@ export default function Test() {
                 <Link
                   to={p.link}
                   target="_blank"
-                  className="mt-2 block bg-amber-900 text-center py-1 rounded"
+                  className="mt-2 block bg-amber-900 text-center py-1 px-3"
                 >
                   R$ {p.price.toFixed(2).replace(".", ",")}
                 </Link>
