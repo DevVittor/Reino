@@ -156,7 +156,7 @@ export default function Test() {
                 key={c._id}
                 className={`transition-all duration-200 cursor-pointer truncate px-4 py-2 rounded-full text-center text-sm font-semibold shadow-md hover:bg-[#52280f] hover:text-dourado ${
                   selectedCategory === c._id
-                    ? "bg-[#FFE99A] text-[#361500]"
+                    ? "bg-[#FFE99A] text-marrbg-marrom"
                     : "bg-[#3F2305] text-dourado"
                 }`}
                 onClick={() =>
@@ -182,7 +182,7 @@ export default function Test() {
                   .map((s) => (
                     <li
                       key={s._id}
-                      className="bg-[#52280f] truncate text-dourado px-3 py-1 rounded-full text-sm text-center shadow-sm hover:bg-[#FFE99A] hover:text-[#361500] cursor-default"
+                      className="bg-[#52280f] truncate text-dourado px-3 py-1 rounded-full text-sm text-center shadow-sm hover:bg-[#FFE99A] hover:text-marrbg-marrom cursor-default"
                       title={s.subCategory}
                     >
                       {s.subCategory}
@@ -211,7 +211,7 @@ export default function Test() {
 
       <div className="flex-grow md:ml-[350px]">
         <div className="sticky top-0 flex justify-center items-center flex-col z-50 bg-[#3F2305]">
-          <div className="flex justify-center items-center gap-1 w-full md:hidden px-3 py-1 bg-[#361500] border-b border-[#52280f]">
+          <div className="flex justify-center items-center gap-1 w-full md:hidden px-3 py-1 bg-marrom border-b border-[#52280f]">
             <img src={Logo} alt="Logo" className="h-16" />
             <h2 className="text-4xl text-dourado title_logo font-bold leading-[33px]">
               Reino
@@ -219,11 +219,11 @@ export default function Test() {
               Animal
             </h2>
           </div>
-          <div className="relative w-full max-w-6xl bg-[#361500] md:mt-2 md:p-2 p-1 flexe flex-col gap-2 text-center">
-            <div className="flex justify-center items-center gap-1 ">
+          <div className="relative w-full max-w-6xl md:mt-2 flex flex-col gap-2 text-center px-2 pb-2">
+            <div className="flex justify-center items-center gap-1 mt-2">
               <img className="w-14 -mt-10" src={Fire} alt="Fire_icon" />
               <div className="flex justify-center items-center flex-col">
-                <h2 className="text-dourado destaque_da_selva md:text-4xl text-2xl relative font-bold mb-2 uppercase z-10">
+                <h2 className="text-dourado destaque_da_selva md:text-4xl text-2xl relative font-bold uppercase z-10">
                   Destaques da Selva
                 </h2>
                 {/*<img
@@ -251,7 +251,15 @@ export default function Test() {
               modules={[FreeMode, Pagination, Navigation]}
             >
               {featuredProducts.map((p) => (
-                <SwiperSlide key={p._id} style={{ width: "auto" }}>
+                <SwiperSlide
+                  className="bg-amber-900"
+                  key={p._id}
+                  style={{
+                    width: "auto",
+                    padding: "5px",
+                    borderRadius: "5px",
+                  }}
+                >
                   <div className="bg-[#070707] flex flex-col items-center rounded overflow-hidden h-full shadow-lg w-full">
                     <div className="flex justify-center items-center h-[200px] md:h-[350px] relative ">
                       <img
@@ -385,7 +393,7 @@ export default function Test() {
         </div>
       </div>
 
-      <div className="fixed bottom-0 w-full bg-[#361500] border-t border-[#52280f] flex justify-around items-center py-2 z-50 md:hidden">
+      <div className="fixed bottom-0 w-full bg-marrom border-t border-[#52280f] flex justify-around items-center py-2 z-50 md:hidden">
         <Link
           to="/"
           className="flex flex-col items-center text-xs text-dourado"

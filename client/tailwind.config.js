@@ -8,6 +8,7 @@ export default {
         laranja: "#FF9900",
         dourado: "#F3C623",
         outro_dourado: "#FFE99A",
+        marrom: "#361500",
       },
     },
   },
