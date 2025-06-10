@@ -8,6 +8,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import "swiper/css/autoplay";
 import { FreeMode, Pagination, Navigation } from "swiper/modules";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -133,7 +134,7 @@ export default function Test() {
         <div className="flex flex-col items-center text-center">
           <Link to="/" className="flex flex-col items-center text-center">
             <img src={Logo} alt="Logo" className="h-16 mb-2" />
-            <h1 className="text-[#FFE99A] text-3xl font-extrabold tracking-widest uppercase">
+            <h1 className="text-dourado text-3xl tracking-widest uppercase title_logo">
               Reino Animal
             </h1>
           </Link>
@@ -142,7 +143,7 @@ export default function Test() {
             placeholder="Buscar produto..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="mt-4 w-full p-2 rounded bg-[#1F1100] text-[#FFE99A] placeholder-[#ffe99a88] border border-[#52280f] text-sm focus:outline-none focus:ring-2 focus:ring-amber-800"
+            className="mt-4 w-full p-2 rounded bg-[#1F1100] text-dourado placeholder-[#ffe99a88] border border-[#52280f] text-sm focus:outline-none focus:ring-2 focus:ring-amber-800"
           />
         </div>
 
@@ -152,10 +153,10 @@ export default function Test() {
               <li
                 title={c.category}
                 key={c._id}
-                className={`transition-all duration-200 cursor-pointer truncate px-4 py-2 rounded-full text-center text-sm font-semibold shadow-md hover:bg-[#52280f] hover:text-[#FFE99A] ${
+                className={`transition-all duration-200 cursor-pointer truncate px-4 py-2 rounded-full text-center text-sm font-semibold shadow-md hover:bg-[#52280f] hover:text-dourado ${
                   selectedCategory === c._id
                     ? "bg-[#FFE99A] text-[#361500]"
-                    : "bg-[#3F2305] text-[#FFE99A]"
+                    : "bg-[#3F2305] text-dourado"
                 }`}
                 onClick={() =>
                   setSelectedCategory(selectedCategory === c._id ? null : c._id)
@@ -167,7 +168,7 @@ export default function Test() {
           </ol>
           {selectedCategory && (
             <div className="mt-6">
-              <h4 className="text-[#FFE99A] text-lg font-bold border-b border-[#FFE99A] pb-1 mb-2">
+              <h4 className="text-dourado text-lg font-bold border-b border-[#FFE99A] pb-1 mb-2">
                 Subcategorias
               </h4>
               <ul className="flex flex-col gap-2 max-h-[300px] overflow-y-auto scrollbar-thin scrollbar-thumb-[#52280f] scrollbar-track-transparent pr-1">
@@ -180,7 +181,7 @@ export default function Test() {
                   .map((s) => (
                     <li
                       key={s._id}
-                      className="bg-[#52280f] truncate text-[#FFE99A] px-3 py-1 rounded-full text-sm text-center shadow-sm hover:bg-[#FFE99A] hover:text-[#361500] cursor-default"
+                      className="bg-[#52280f] truncate text-dourado px-3 py-1 rounded-full text-sm text-center shadow-sm hover:bg-[#FFE99A] hover:text-[#361500] cursor-default"
                       title={s.subCategory}
                     >
                       {s.subCategory}
@@ -197,11 +198,11 @@ export default function Test() {
             className="w-fit bg-amber-950 hover:bg-amber-900 transition-colors ease-in-out duration-300 flex gap-3 justify-center items-center p-3 rounded-xl"
           >
             <div>
-              <FaTachometerAlt className="text-3xl text-[#FFE99A]" />
+              <FaTachometerAlt className="text-3xl text-dourado" />
             </div>
             <div className="flex flex-col">
-              <h3 className="text-[#FFE99A] font-medium">Painel de Controle</h3>
-              <span className="font-light text-[#FFE99A] text-xs">Acessar</span>
+              <h3 className="text-dourado font-medium">Painel de Controle</h3>
+              <span className="font-light text-dourado text-xs">Acessar</span>
             </div>
           </Link>
         </div>
@@ -210,30 +211,65 @@ export default function Test() {
       <div className="flex-grow md:ml-[350px]">
         <div className="sticky top-0 flex justify-center items-center flex-col z-50 bg-[#3F2305]">
           <div className="flex justify-center items-center gap-1 w-full md:hidden px-3 py-1 bg-[#361500] border-b border-[#52280f]">
-            <img src={Logo} alt="Logo" className="h-14" />
-            <h2 className="text-4xl font-bold text-[#FFE99A]">Reino Animal</h2>
+            <img src={Logo} alt="Logo" className="h-16" />
+            <h2 className="text-4xl text-dourado title_logo font-bold leading-[33px]">
+              Reino
+              <br />
+              Animal
+            </h2>
           </div>
-          <div className="relative w-full max-w-6xl bg-[#361500] md:mt-2 md:p-2 p-1">
+          <div className="relative w-full max-w-6xl bg-[#361500] md:mt-2 md:p-2 p-1 flexe flex-col gap-2 text-center">
+            <div className="flex justify-center items-center gap-1 ">
+              <img
+                className="w-14 -mt-10"
+                src="../src/assets/icons/fire.gif"
+                alt=""
+              />
+              <div className="flex justify-center items-center flex-col">
+                <h2 className="text-dourado destaque_da_selva md:text-4xl text-2xl relative font-bold mb-2 uppercase z-10">
+                  Destaques da Selva
+                </h2>
+                {/*<img
+                  className="rotate-45 md:w-32 w-24 absolute"
+                  src="../src/assets/icons/lança.png"
+                  alt=""
+                />
+                <img
+                  className="-rotate-45 md:w-32 w-24 absolute"
+                  src="../src/assets/icons/lança.png"
+                  alt=""
+                />*/}
+              </div>
+              <img
+                className="w-14 -mt-10"
+                src="../src/assets/icons/fire.gif"
+                alt=""
+              />
+            </div>
             <Swiper
               slidesPerView={"auto"}
               spaceBetween={5}
               freeMode={true}
+              autoplay={{
+                delay: 5000,
+                disableOnInteraction: false,
+              }}
               loop={true}
               modules={[FreeMode, Pagination, Navigation]}
             >
               {featuredProducts.map((p) => (
                 <SwiperSlide key={p._id} style={{ width: "auto" }}>
                   <div className="bg-[#070707] flex flex-col items-center rounded overflow-hidden h-full shadow-lg w-full">
-                    <div className="flex justify-center items-center h-[200px] md:h-[300px] relative">
+                    <div className="flex justify-center items-center h-[200px] md:h-[350px] relative ">
                       <img
                         src={Array.isArray(p.photos) ? p.photos[0] : p.photos}
                         alt={p.product}
                         className="h-full w-auto object-contain"
                         title={p.product}
                       />
-                      <div className="text-[#FFE99A] px-2 py-2 absolute bottom-0 bg-black/70 w-full">
+                      <div className=" px-2 py-2 absolute bottom-0 bg-black/70 w-full">
                         <h2
-                          className="font-semibold line-clamp-2 md:text-base text-sm md:leading-5 leading-4"
+                          className="font-semibold line-clamp-2 md:text-base text-sm md:leading-5 text-[#F3C623] leading-4 "
                           title={p.product}
                         >
                           {p.product}
@@ -241,7 +277,7 @@ export default function Test() {
                         <Link
                           to={p.link}
                           target="_blank"
-                          className="mt-2 inline-block bg-amber-900 hover:bg-amber-800 transition-colors ease-in-out duration-300 py-1 px-3 rounded text-sm"
+                          className="mt-2 inline-block bg-amber-900 border-4 border-amber-800 hover:bg-amber-800 transition-colors font-semibold ease-in-out duration-300 py-1 px-3 rounded text-sm text-[#F3C623]"
                         >
                           R$ {p.price.toFixed(2).replace(".", ",")}
                         </Link>
@@ -259,7 +295,7 @@ export default function Test() {
                 initial={{ opacity: 0, y: "100%" }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: "100%" }}
-                className="md:hidden fixed bottom-14 left-0 right-0  bg-[#3F2305] text-[#FFE99A] border-t border-[#52280f] p-4 z-40 max-h-[50dvh] overflow-y-auto"
+                className="md:hidden fixed bottom-14 left-0 right-0  bg-[#3F2305] text-dourado border-t border-[#52280f] p-4 z-40 max-h-[50dvh] overflow-y-auto"
               >
                 {!selectedCategory ? (
                   <div className="flex flex-col gap-3">
@@ -313,7 +349,7 @@ export default function Test() {
                   placeholder="Buscar produto..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full p-2 rounded bg-[#1F1100] text-[#FFE99A] placeholder-[#ffe99a88] border border-[#52280f]"
+                  className="w-full p-2 rounded bg-[#1F1100] text-dourado placeholder-[#ffe99a88] border border-[#52280f]"
                 />
               </motion.div>
             )}
@@ -336,9 +372,9 @@ export default function Test() {
                   className="w-full object-cover"
                   title={p.product}
                 />
-                <div className="p-2 text-[#FFE99A]">
+                <div className="p-2">
                   <h2
-                    className="font-semibold line-clamp-2 md:leading-5 leading-4 md:text-base text-sm"
+                    className="font-semibold line-clamp-2 md:leading-5 leading-4 md:text-base text-sm text-dourado"
                     title={p.product}
                   >
                     {p.product}
@@ -346,7 +382,7 @@ export default function Test() {
                   <Link
                     to={p.link}
                     target="_blank"
-                    className="mt-2 block bg-amber-900 text-center py-1 px-3 font-medium"
+                    className="mt-2 block bg-amber-900 border-4 border-amber-800 text-center py-1 px-3 font-medium text-dourado"
                   >
                     R$ {p.price.toFixed(2).replace(".", ",")}
                   </Link>
@@ -359,7 +395,7 @@ export default function Test() {
       <div className="fixed bottom-0 w-full bg-[#361500] border-t border-[#52280f] flex justify-around items-center py-2 z-50 md:hidden">
         <Link
           to="/"
-          className="flex flex-col items-center text-xs text-[#FFE99A]"
+          className="flex flex-col items-center text-xs text-dourado"
         >
           <FiHome size={20} />
           Início
@@ -369,7 +405,7 @@ export default function Test() {
             setShowSearch(false);
             setShowCategories((prev) => !prev);
           }}
-          className="flex flex-col items-center text-xs text-[#FFE99A]"
+          className="flex flex-col items-center text-xs text-dourado"
         >
           <FiGrid size={20} />
           Categorias
@@ -379,14 +415,14 @@ export default function Test() {
             setShowCategories(false);
             setShowSearch((prev) => !prev);
           }}
-          className="flex flex-col items-center text-xs text-[#FFE99A]"
+          className="flex flex-col items-center text-xs text-dourado"
         >
           <FiSearch size={20} />
           Buscar
         </button>
         <Link
           to="/painel"
-          className="flex flex-col items-center text-xs text-[#FFE99A]"
+          className="flex flex-col items-center text-xs text-dourado"
         >
           <FaTachometerAlt size={20} />
           Painel

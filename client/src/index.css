@@ -19,9 +19,11 @@ html {
   font-style: normal;
 }
 .title_logo {
-  font-family: "Ultra", serif;
-  font-weight: 400;
-  font-style: normal;
+  font-family: "Cinzel", serif;
+}
+
+.destaque_da_selva {
+  font-family: "Rubik Gemstones", system-ui;
 }
 
 /*Slider*/
