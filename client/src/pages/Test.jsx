@@ -210,8 +210,8 @@ export default function Test() {
       </div>
 
       <div className="flex-grow md:ml-[350px]">
-        <div className="sticky top-0 flex justify-center items-center flex-col z-50 bg-[#3F2305]">
-          <div className="flex justify-center items-center gap-1 w-full md:hidden px-3 py-1 bg-marrom border-b border-[#52280f]">
+        <div className="flex justify-center items-center flex-col z-50 bg-[#3F2305]">
+          <div className="sticky top-0 flex justify-center items-center gap-1 w-full md:hidden px-3 py-1 bg-marrom border-b border-[#52280f]">
             <img src={Logo} alt="Logo" className="h-16" />
             <h2 className="text-4xl text-dourado title_logo font-bold leading-[33px]">
               Reino
