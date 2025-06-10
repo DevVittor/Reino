@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import Logo from "../assets/logo.svg";
+import Fire from "../assets/icons/fire.gif";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { FiHome, FiSearch, FiGrid } from "react-icons/fi";
@@ -220,11 +221,7 @@ export default function Test() {
           </div>
           <div className="relative w-full max-w-6xl bg-[#361500] md:mt-2 md:p-2 p-1 flexe flex-col gap-2 text-center">
             <div className="flex justify-center items-center gap-1 ">
-              <img
-                className="w-14 -mt-10"
-                src="../assets/icons/fire.gif"
-                alt=""
-              />
+              <img className="w-14 -mt-10" src={Fire} alt="Fire_icon" />
               <div className="flex justify-center items-center flex-col">
                 <h2 className="text-dourado destaque_da_selva md:text-4xl text-2xl relative font-bold mb-2 uppercase z-10">
                   Destaques da Selva
@@ -240,11 +237,7 @@ export default function Test() {
                   alt=""
                 />*/}
               </div>
-              <img
-                className="w-14 -mt-10"
-                src="../assets/icons/fire.gif"
-                alt=""
-              />
+              <img className="w-14 -mt-10" src={Fire} alt="Fire_icon" />
             </div>
             <Swiper
               slidesPerView={"auto"}
