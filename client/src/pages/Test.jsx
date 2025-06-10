@@ -210,15 +210,15 @@ export default function Test() {
       </div>
 
       <div className="flex-grow md:ml-[350px]">
+        <div className="sticky top-0 z-50 flex justify-center items-center gap-1 w-full md:hidden px-3 py-2 bg-marrom border-b border-[#52280f]">
+          <img src={Logo} alt="Logo" className="h-16" />
+          <h2 className="text-4xl text-dourado title_logo font-bold leading-[33px]">
+            Reino
+            <br />
+            Animal
+          </h2>
+        </div>
         <div className="flex justify-center items-center flex-col bg-[#3F2305]">
-          <div className="sticky top-0 z-50 flex justify-center items-center gap-1 w-full md:hidden px-3 py-1 bg-marrom border-b border-[#52280f]">
-            <img src={Logo} alt="Logo" className="h-16" />
-            <h2 className="text-4xl text-dourado title_logo font-bold leading-[33px]">
-              Reino
-              <br />
-              Animal
-            </h2>
-          </div>
           <div className="relative w-full max-w-6xl md:mt-2 flex flex-col gap-2 text-center px-2 pb-2">
             <div className="flex justify-center items-center gap-1 mt-2">
               <img className="w-14 -mt-10" src={Fire} alt="Fire_icon" />
