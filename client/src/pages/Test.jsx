@@ -224,7 +224,7 @@ export default function Test() {
               <img className="w-14 -mt-10" src={Fire} alt="Fire_icon" />
               <div className="flex justify-center items-center flex-col">
                 <h2 className="text-dourado destaque_da_selva md:text-4xl text-2xl relative font-bold uppercase z-10">
-                  Destaques da Selva
+                  tesouros da tribo
                 </h2>
                 {/*<img
                   className="rotate-45 md:w-32 w-24 absolute"
