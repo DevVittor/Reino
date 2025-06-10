@@ -222,7 +222,7 @@ export default function Test() {
             <div className="flex justify-center items-center gap-1 ">
               <img
                 className="w-14 -mt-10"
-                src="../src/assets/icons/fire.gif"
+                src="../assets/icons/fire.gif"
                 alt=""
               />
               <div className="flex justify-center items-center flex-col">
@@ -231,18 +231,18 @@ export default function Test() {
                 </h2>
                 {/*<img
                   className="rotate-45 md:w-32 w-24 absolute"
-                  src="../src/assets/icons/lança.png"
+                  src="../assets/icons/lança.png"
                   alt=""
                 />
                 <img
                   className="-rotate-45 md:w-32 w-24 absolute"
-                  src="../src/assets/icons/lança.png"
+                  src="../assets/icons/lança.png"
                   alt=""
                 />*/}
               </div>
               <img
                 className="w-14 -mt-10"
-                src="../src/assets/icons/fire.gif"
+                src="../assets/icons/fire.gif"
                 alt=""
               />
             </div>
