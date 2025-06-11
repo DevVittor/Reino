@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import Logo from "../assets/logo.svg";
 import Fire from "../assets/icons/fire.gif";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { FiHome, FiSearch, FiGrid } from "react-icons/fi";
 import { FaTachometerAlt } from "react-icons/fa";
@@ -10,7 +10,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/autoplay";
-import { FreeMode, Pagination, Navigation } from "swiper/modules";
+import { FreeMode, Pagination, Navigation, Autoplay } from "swiper/modules";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function Test() {
@@ -28,6 +28,16 @@ export default function Test() {
 
   const API = "https://reino-production.up.railway.app";
   const limit = windowWidth >= 768 ? 15 : 10;
+
+  const swiperRef = useRef(null);
+
+  const handleMouseEnter = () => {
+    swiperRef.current?.autoplay?.stop();
+  };
+
+  const handleMouseLeave = () => {
+    swiperRef.current?.autoplay?.start();
+  };
 
   useEffect(() => {
     setPage(1);
@@ -219,7 +229,7 @@ export default function Test() {
           </h2>
         </div>
         <div className="flex justify-center items-center flex-col bg-[#3F2305]">
-          <div className="relative w-full max-w-6xl md:mt-2 flex flex-col gap-2 text-center px-2 pb-2">
+          <div className="w-full md:mt-2 flex flex-col gap-2 text-center md:px-2 px-1 py-0">
             <div className="flex justify-center items-center gap-1 mt-2">
               <img className="w-14 -mt-10" src={Fire} alt="Fire_icon" />
               <div className="flex justify-center items-center flex-col">
@@ -243,24 +253,28 @@ export default function Test() {
               slidesPerView={"auto"}
               spaceBetween={5}
               freeMode={true}
+              loop={true}
               autoplay={{
-                delay: 5000,
+                delay: 3000,
                 disableOnInteraction: false,
               }}
-              loop={true}
-              modules={[FreeMode, Pagination, Navigation]}
+              modules={[FreeMode, Pagination, Navigation, Autoplay]}
+              onSwiper={(swiper) => {
+                swiperRef.current = swiper;
+              }}
             >
               {featuredProducts.map((p) => (
                 <SwiperSlide
-                  className="bg-amber-900"
                   key={p._id}
                   style={{
                     width: "auto",
-                    padding: "5px",
-                    borderRadius: "5px",
                   }}
                 >
-                  <div className="bg-[#070707] flex flex-col items-center rounded overflow-hidden h-full shadow-lg w-full">
+                  <div
+                    className="bg-[#070707] flex flex-col items-center rounded overflow-hidden h-full shadow-lg w-full border-4 border-amber-900"
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                  >
                     <div className="flex justify-center items-center h-[200px] md:h-[350px] relative ">
                       <img
                         src={Array.isArray(p.photos) ? p.photos[0] : p.photos}
