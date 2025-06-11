@@ -397,7 +397,7 @@ export default function Test() {
                   <Link
                     to={p.link}
                     target="_blank"
-                    className="mt-2 block bg-amber-900 border-4 border-amber-800 text-center py-1 px-3 font-medium text-dourado"
+                    className="mt-2 block bg-amber-900 rounded hover:bg-amber-800 transition-colors ease-in-out duration-300 border-4 border-amber-800 text-center py-1 px-3 font-medium text-dourado"
                   >
                     R$ {p.price.toFixed(2).replace(".", ",")}
                   </Link>
