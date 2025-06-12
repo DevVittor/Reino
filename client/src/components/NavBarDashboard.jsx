@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { useState } from "react";
 import { IoClose } from "react-icons/io5";
-import { FaPowerOff } from "react-icons/fa6";
+import { FaPowerOff } from "react-icons/fa";
 import { IoLogoWhatsapp, IoIosHome } from "react-icons/io";
 
 export default function NavBarDashboard() {
@@ -103,14 +103,15 @@ export default function NavBarDashboard() {
       <aside className="hidden md:flex fixed top-0 left-0 bg-black w-[350px] min-h-screen text-white px-5 py-8 flex-col justify-between z-40">
         <PainelConteudo />
         <div className="flex justify-center items-center gap-2 flex-col">
-          <Link
+          <a
             className="px-3 py-1 rounded font-bold flex items-center gap-1 bg-green-400"
-            to="https://api.whatsapp.com/send/?phone=5521993737130&text=Estou+com+um+problema+no+site.&type=phone_number&app_absent=0"
+            href="https://api.whatsapp.com/send/?phone=5521993737130&text=Estou+com+um+problema+no+site.&type=phone_number&app_absent=0"
             target="_blank"
+            rel="noopener noreferrer"
           >
             <IoLogoWhatsapp />
             Suporte
-          </Link>
+          </a>
           <button
             className="px-3 py-1 rounded bg-red-500 text-zinc-100 font-bold flex items-center gap-1"
             onClick={logout}
