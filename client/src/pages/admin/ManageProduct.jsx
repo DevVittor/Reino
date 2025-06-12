@@ -23,7 +23,7 @@ export default function ManageProduct() {
   });
   const [newPhotos, setNewPhotos] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const endpoint = "https://reino-production.up.railway.app";
+  const endpoint = "https://reino-production.up.railway.app/api";
 
   useEffect(() => {
     const token = localStorage.getItem("token");
