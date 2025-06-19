@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import { Link } from "react-router-dom";
 import { IoMdArrowDropdown, IoMdArrowDropup } from "react-icons/io";
@@ -79,9 +79,7 @@ export default function NavBarAdmin() {
               >
                 Criar Produto
               </Link>
-              <span
-                className="block p-2 text-sm text-gray-400 hover:bg-indigo-600 hover:text-white rounded"
-              >
+              <span className="block p-2 text-sm text-gray-400 hover:bg-indigo-600 hover:text-white rounded">
                 Editar Produto (Em Manutenção)
               </span>
               <Link

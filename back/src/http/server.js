@@ -45,7 +45,7 @@ app.use((req, res, next) => {
 
 app.use("/api", router);
 
-const port = process.env.PORT || 8080;
+const port = process.env.PORT;
 
 serverHTTP.listen(port, async () => {
   try {
