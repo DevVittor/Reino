@@ -84,6 +84,6 @@ function runBackup() {
 }
 
 // Teste: cron job executando a cada minuto
-cron.schedule("* * * * *", runBackup); // Isso faz o backup ser rodado a cada minuto
-
-//runBackup();
+cron.schedule("0 2 */3 * *", runBackup, {
+  timezone: "America/Sao_Paulo", // Define o fuso horário
+});
