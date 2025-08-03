@@ -4,6 +4,8 @@ const app = express();
 import { createServer } from "node:http";
 const serverHTTP = createServer(app);
 
+import { exec } from "child_process";
+
 // Importa e agenda o backup (cron job é iniciado automaticamente)
 import "../middleware/backupMongoDB.js";
 
@@ -44,6 +46,19 @@ app.use((req, res, next) => {
 });
 
 app.use("/api", router);
+
+exec("mongodump --version", (error, stdout, stderr) => {
+  if (error) {
+    console.error(`Exec error: ${error}`);
+    // Não pare a inicialização do servidor
+    return;
+  }
+  if (stderr) {
+    console.error(`stderr: ${stderr}`);
+    return;
+  }
+  console.log(`mongodump versão: ${stdout}`);
+});
 
 const port = process.env.PORT;
 
