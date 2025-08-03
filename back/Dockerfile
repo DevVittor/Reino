@@ -1,10 +1,13 @@
 # Use uma imagem base do Node.js
-FROM node:16
+FROM node:16-bullseye
+
+# Alterar repositórios do Debian para a versão bullseye (mais recente)
+RUN sed -i 's/buster/bullseye/g' /etc/apt/sources.list
 
 # Defina o diretório de trabalho dentro do contêiner
 WORKDIR /app
 
-# Instale o MongoDB Database Tools (mongodump)
+# Atualize os pacotes e instale o MongoDB Database Tools (mongodump)
 RUN apt-get update && apt-get install -y mongodb-org-tools
 
 # Copie o package.json e o yarn.lock para o contêiner
