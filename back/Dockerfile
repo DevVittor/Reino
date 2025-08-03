@@ -1,5 +1,5 @@
-# Use uma imagem base do Node.js
-FROM node:16-bullseye
+# Use uma imagem base do Node.js com a versão 20
+FROM node:20-bullseye
 
 # Defina o diretório de trabalho dentro do contêiner
 WORKDIR /app
